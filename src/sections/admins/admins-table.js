@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Card,
   Checkbox,
+  CircularProgress,
   IconButton,
   Popover,
   Stack,
@@ -28,28 +29,13 @@ export const AdminsTable = (props) => {
   const {
     count = 0,
     items = [],
-    onDeselectAll,
-    onDeselectOne,
     onPageChange = () => { },
     onRowsPerPageChange,
-    onSelectAll,
-    onSelectOne,
-    page = 0,
+    page = 1,
     rowsPerPage = 0,
-    selected = []
+    isLoading = true,
+    isEmpty = true,
   } = props;
-
-  const selectedSome = (selected.length > 0) && (selected.length < items.length);
-  const selectedAll = (items.length > 0) && (selected.length === items.length);
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   return (
     <Card>
@@ -74,82 +60,85 @@ export const AdminsTable = (props) => {
                   Função Administrativa
                 </TableCell>
                 <TableCell>
-                  Divisão
-                </TableCell>
-                <TableCell>
                   Ações
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {items.map((customer) => {
-                const isSelected = selected.includes(customer.id);
-                const createdAt = format(customer.createdAt, 'dd/MM/yyyy');
+            {!isLoading ?
+              !isEmpty ?
+                <TableBody>
+                  {items.map((data) => {
+                    return (
+                      <TableRow
+                        hover
+                        key={data.id}
+                      >
+                        <TableCell>
+                          <Typography variant="subtitle3" sx={{ fontWeight: 'bold', color: 'secondary.main' }}>
+                            #{data.id}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          {data.user.username}
+                        </TableCell>
+                        <TableCell>
+                          {data.user.full_name}
+                        </TableCell>
+                        <TableCell>
+                          {data.user.email}
+                        </TableCell>
+                        <TableCell>
+                          {data.role.name}
+                        </TableCell>
+                        <TableCell>
+                          <ButtonGroup aria-label="outlined primary button group">
+                            <ViewModal id={data.id} />
+                            <MenuButton id={data.id} />
+                          </ButtonGroup>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+                :
+                <TableBody>
+                  <TableCell colSpan={7}>
+                    <Box sx={{ justifyContent: 'center' }}>
+                      <Typography variant='subtitle'><ErrorOutline sx={{ verticalAlign: 'bottom' }} /> Não há dados nessa tabela.</Typography>
 
+                    </Box>
+                  </TableCell>
+                </TableBody>
+              :
+              <TableBody>
+                <TableCell colSpan={7}>
+                  <Box sx={{ justifyContent: 'center' }}>
+                    <CircularProgress />
+                  </Box>
+                </TableCell>
+              </TableBody>
 
-                return (
-                  <TableRow
-                    hover
-                    key={customer.id}
-                    selected={isSelected}
-                  >
-                    <TableCell>
-                      <Typography variant="subtitle3" sx={{ fontWeight: 'bold', color: 'secondary.main' }}>
-                        #{customer.id}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {customer.username}
-                    </TableCell>
-                    <TableCell>
-                      {customer.name}
-                    </TableCell>
-                    <TableCell>
-                      {customer.email}
-                    </TableCell>
-                    <TableCell>
-                      {customer.role}
-                    </TableCell>
-                    <TableCell>
-                      {customer.division}
-                    </TableCell>
-                    <TableCell>
-                      <ButtonGroup aria-label="outlined primary button group">
-                        <ViewModal id={customer.id} />
-                        <MenuButton id={customer.id} />
-                      </ButtonGroup>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
+            }
           </Table>
         </Box>
       </Scrollbar>
-      <TablePagination
-        component="div"
-        shape="rounded"
-        count={count}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
+      {!isLoading && !isEmpty &&
+        <TablePagination
+          labelDisplayedRows={
+            ({ from, page, count }) => {
+              return 'Mostrando ' + from + ' de ' + count + ' itens | Página ' + (page + 1)
+            }
+          }
+          rowsPerPageOptions={-1}
+          component="div"
+          shape="rounded"
+          count={count}
+          onPageChange={onPageChange}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={onRowsPerPageChange}
+        />
+      }
     </Card>
   );
-};
-
-AdminsTable.propTypes = {
-  count: PropTypes.number,
-  items: PropTypes.array,
-  onDeselectAll: PropTypes.func,
-  onDeselectOne: PropTypes.func,
-  onPageChange: PropTypes.func,
-  onRowsPerPageChange: PropTypes.func,
-  onSelectAll: PropTypes.func,
-  onSelectOne: PropTypes.func,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  selected: PropTypes.array
 };

@@ -13,56 +13,7 @@ import { applyPagination } from 'src/utils/apply-pagination';
 import { CompaniesTable } from 'src/sections/empresas/companies-table';
 import { CompaniesSearch } from 'src/sections/empresas/companies-search';
 import { Home, NavigateNext } from '@mui/icons-material';
-
-const now = new Date();
-
-const data = [
-  {
-    id: '848',
-    name: 'Empresa Ficticia LTDA',
-    corporate_name: 'Ficticia',
-    created_at: subDays(subHours(now, 7), 1).getTime(),
-    CNPJ: '12.345.678/9101-12',
-    town_registration: 'SP',
-    state_registration: 'SJC',
-  },
-  {
-    id: '1',
-    name: 'Empresa Ficticia LTDA',
-    corporate_name: 'Ficticia',
-    created_at: subDays(subHours(now, 7), 1).getTime(),
-    CNPJ: '12.345.678/9101-12',
-    town_registration: 'SP',
-    state_registration: 'SJC',
-  },
-  {
-    id: '2',
-    name: 'Empresa Ficticia LTDA',
-    corporate_name: 'Ficticia',
-    created_at: subDays(subHours(now, 7), 1).getTime(),
-    CNPJ: '12.345.678/9101-12',
-    town_registration: 'SP',
-    state_registration: 'SJC',
-  }
-];
-
-const useCustomers = (page, rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(data, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  );
-};
-
-const useCustomerIds = (customers) => {
-  return useMemo(
-    () => {
-      return customers.map((customer) => customer.id);
-    },
-    [customers]
-  );
-};
+import { FindActiveCompanies } from 'src/services/CompaniesService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -75,10 +26,9 @@ const breadcrumbs = [
 
 const Page = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const customers = useCustomers(page, rowsPerPage);
-  const customersIds = useCustomerIds(customers);
-  const customersSelection = useSelection(customersIds);
+  const [filter, setFilter] = useState();
+  const [refreshState, setRefreshState] = useState();
+  const { data, pagination, isLoading, isEmpty } = FindActiveCompanies(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -93,6 +43,7 @@ const Page = () => {
     },
     []
   );
+
   return (
     <>
       <Head>
@@ -149,25 +100,15 @@ const Page = () => {
             </Stack>
             <CompaniesSearch />
             <CompaniesTable
-              count={data.length}
+              count={pagination.total_pages}
               items={data}
-              onDeselectAll={customersSelection.handleDeselectAll}
-              onDeselectOne={customersSelection.handleDeselectOne}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={customersSelection.handleSelectAll}
-              onSelectOne={customersSelection.handleSelectOne}
               page={page}
-              rowsPerPage={rowsPerPage}
-              selected={customersSelection.selected}
+              rowsPerPage={pagination.per_page}
+              isLoading={isLoading}
+              isEmpty={isEmpty}
             />
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center'
-              }}
-            >
-            </Box>
           </Stack>
         </Container>
       </Box>

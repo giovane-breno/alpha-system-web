@@ -11,52 +11,11 @@ import { WorkersTable } from 'src/sections/funcionarios/workers-table';
 import { CustomersSearch, WorkersSearch } from 'src/sections/funcionarios/workers-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { Home, NavigateNext } from '@mui/icons-material';
-
-const now = new Date();
-
-const data = [
-  {
-    id: '1',
-    division: 'Divisão de Tecnologia da Informação',
-    role: 'Desenvolvedor',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-    email: 'giovane.breno@gmail.com',
-    name: 'Giovane Breno Pereira Barbosa',
-    username: '47645469811',
-    isAdmin: 'true'
-  },
-  {
-    id: '2',
-    division: 'Núcleo de Gestão e Contratos',
-    role: 'Contador',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-    email: 'giovane.breno@gmail.com',
-    name: 'Giovane Breno Pereira Barbosa',
-    username: '47645469811'
-  }
-];
-
-const useCustomers = (page, rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(data, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  );
-};
-
-const useCustomerIds = (customers) => {
-  return useMemo(
-    () => {
-      return customers.map((customer) => customer.id);
-    },
-    [customers]
-  );
-};
+import { FindActiveWorkers } from 'src/services/WorkersService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
-    <Home/>
+    <Home />
   </Link>,
   <Typography key="3" color="text.primary">
     Funcionários
@@ -65,10 +24,9 @@ const breadcrumbs = [
 
 const Page = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const customers = useCustomers(page, rowsPerPage);
-  const customersIds = useCustomerIds(customers);
-  const customersSelection = useSelection(customersIds);
+  const [filter, setFilter] = useState();
+  const [refreshState, setRefreshState] = useState();
+  const { data, pagination, isLoading, isEmpty } = FindActiveWorkers(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -125,7 +83,7 @@ const Page = () => {
                 <Link href={"/funcionarios/cadastrar"}>
 
                   <Button
-                  color='success'
+                    color='success'
                     startIcon={(
                       <SvgIcon fontSize="small">
                         <PlusIcon />
@@ -140,18 +98,16 @@ const Page = () => {
             </Stack>
             <WorkersSearch />
             <WorkersTable
-              count={data.length}
-              items={customers}
-              onDeselectAll={customersSelection.handleDeselectAll}
-              onDeselectOne={customersSelection.handleDeselectOne}
+              count={pagination.total_pages}
+              items={data}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={customersSelection.handleSelectAll}
-              onSelectOne={customersSelection.handleSelectOne}
               page={page}
-              rowsPerPage={rowsPerPage}
-              selected={customersSelection.selected}
+              rowsPerPage={pagination.per_page}
+              isLoading={isLoading}
+              isEmpty={isEmpty}
             />
+            
           </Stack>
         </Container >
       </Box >

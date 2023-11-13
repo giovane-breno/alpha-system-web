@@ -55,7 +55,7 @@ export const AssignWorker = () => {
     };
 
     const CheckExistingCompany = () => {
-        let company = sessionStorage.getItem(('company-data'));
+        let company = localStorage.getItem(('company-data'));
         setCompany(JSON.parse(company));
     }
 
@@ -80,7 +80,7 @@ export const AssignWorker = () => {
                 <Box sx={{ pb: 3 }}>
                     <TextField fullWidth InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} sx={{ maxWidth: 500, display: "inline-block" }}
                         id="outlined-basic" label="Empresa Vinculada *" variant="filled"
-                        value={company && company.label}
+                        value={company && company.name}
                         error={!!(!company)}
                         helperText={!company && "Necessário selecionar uma empresa!"}
                     />

@@ -10,32 +10,7 @@ import { CreateModal } from 'src/sections/rh/beneficios/modal/benefits-create-mo
 import { BenefitsTable } from 'src/sections/rh/beneficios/benefits-table';
 import { BenefitsSearch } from 'src/sections/rh/beneficios/benefits-search';
 import { Home, NavigateNext } from '@mui/icons-material';
-
-const now = new Date();
-
-const data = [
-  {
-    id: '1',
-    name: 'Vale-Transporte',
-    bonus: '300,00',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-  },
-  {
-    id: '2',
-    name: 'Vale-Alimentação',
-    bonus: '200,00',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-  }
-];
-
-const useAdmins = (page, rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(data, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  );
-};
+import { FindActiveBenefit } from 'src/services/HumanResourceService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -56,8 +31,9 @@ const breadcrumbs = [
 
 const Page = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const admins = useAdmins(page, rowsPerPage);
+  const [filter, setFilter] = useState();
+  const [refreshState, setRefreshState] = useState();
+  const { data, pagination, isLoading, isEmpty } = FindActiveBenefit(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -110,18 +86,18 @@ const Page = () => {
                   Tabela contendo todos os Benefícios cadastrados.
                 </Typography>
               </Stack>
-              <div>
-                <CreateModal />
-              </div>
             </Stack>
             <BenefitsSearch />
             <BenefitsTable
-              count={data.length}
-              items={admins}
+              count={pagination.total_pages}
+              items={data}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}
-              rowsPerPage={rowsPerPage}
+              rowsPerPage={pagination.per_page}
+              isLoading={isLoading}
+              isEmpty={isEmpty}
+              
             />
           </Stack>
         </Container>

@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Card,
   Checkbox,
+  Chip,
   CircularProgress,
   IconButton,
   Popover,
@@ -23,10 +24,10 @@ import { Scrollbar } from 'src/components/scrollbar';
 import { getInitials } from 'src/utils/get-initials';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import { useState } from 'react';
-import { DeleteModal, ViewModal } from './modal/workers-actions-modal';
+import { DeleteModal, DemoteModal, MenuButton, PromoteModal, ViewModal } from './modal/roles-actions-modal';
 import { ErrorOutline } from '@mui/icons-material';
 
-export const WorkersTable = (props) => {
+export const RolesTable = (props) => {
   const {
     count = 0,
     items = [],
@@ -49,19 +50,13 @@ export const WorkersTable = (props) => {
                   Id
                 </TableCell>
                 <TableCell>
-                  Usuário
-                </TableCell>
-                <TableCell>
-                  Nome Completo
-                </TableCell>
-                <TableCell>
-                  Email
-                </TableCell>
-                <TableCell>
                   Função
                 </TableCell>
                 <TableCell>
-                  Divisão
+                  Permissões
+                </TableCell>
+                <TableCell>
+                  Data da Criação
                 </TableCell>
                 <TableCell>
                   Ações
@@ -76,6 +71,7 @@ export const WorkersTable = (props) => {
                       <TableRow
                         hover
                         key={data.id}
+
                       >
                         <TableCell>
                           <Typography variant="subtitle3" sx={{ fontWeight: 'bold', color: 'secondary.main' }}>
@@ -83,23 +79,17 @@ export const WorkersTable = (props) => {
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          {data.username}
+                          {data.name}
                         </TableCell>
                         <TableCell>
-                          {data.full_name}
+                          {data.abilities}
                         </TableCell>
                         <TableCell>
-                          {data.email}
-                        </TableCell>
-                        <TableCell>
-                          {data.role.name}
-                        </TableCell>
-                        <TableCell>
-                          {data.division.name}
+                          <Chip sx={{ backgroundColor: 'info.main', color: 'white' }} label={data.created_at} size='small' />
                         </TableCell>
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
-                            <ViewModal id={data.id} data={data} />
+                            <ViewModal id={data.id} />
                             <DeleteModal id={data.id} />
                           </ButtonGroup>
                         </TableCell>
@@ -126,8 +116,6 @@ export const WorkersTable = (props) => {
               </TableBody>
 
             }
-
-
           </Table>
         </Box>
       </Scrollbar>
@@ -148,8 +136,6 @@ export const WorkersTable = (props) => {
           onRowsPerPageChange={onRowsPerPageChange}
         />
       }
-
     </Card>
   );
 };
-

@@ -9,48 +9,7 @@ import { AdminsSearch } from 'src/sections/admins/admins-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import { Home, NavigateNext } from '@mui/icons-material';
-
-const now = new Date();
-
-const data = [
-  {
-    id: '1',
-    division: 'Divisão de Tecnologia da Informação',
-    role: 'Desenvolvedor',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-    email: 'giovane.breno@gmail.com',
-    name: 'Giovane Breno Pereira Barbosa',
-    username: '47645469811',
-    isAdmin: 'true'
-  },
-  {
-    id: '2',
-    division: 'Núcleo de Gestão e Contratos',
-    role: 'Contador',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-    email: 'giovane.breno@gmail.com',
-    name: 'Giovane Breno Pereira Barbosa',
-    username: '47645469811'
-  }
-];
-
-const useAdmins = (page, rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(data, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  );
-};
-
-const useAdminIds = (admins) => {
-  return useMemo(
-    () => {
-      return admins.map((admin) => admin.id);
-    },
-    [admins]
-  );
-};
+import { FindActiveAdmins } from 'src/services/WorkersService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -63,10 +22,9 @@ const breadcrumbs = [
 
 const Page = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const admins = useAdmins(page, rowsPerPage);
-  const adminsIds = useAdminIds(admins);
-  const adminsSelection = useSelection(adminsIds);
+  const [filter, setFilter] = useState();
+  const [refreshState, setRefreshState] = useState();
+  const { data, pagination, isLoading, isEmpty } = FindActiveAdmins(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -136,17 +94,15 @@ const Page = () => {
             </Stack>
             <AdminsSearch />
             <AdminsTable
-              count={data.length}
-              items={admins}
-              onDeselectAll={adminsSelection.handleDeselectAll}
-              onDeselectOne={adminsSelection.handleDeselectOne}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={adminsSelection.handleSelectAll}
-              onSelectOne={adminsSelection.handleSelectOne}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              selected={adminsSelection.selected}
+               count={pagination.total_pages}
+               items={data}
+               onPageChange={handlePageChange}
+               onRowsPerPageChange={handleRowsPerPageChange}
+               page={page}
+               rowsPerPage={pagination.per_page}
+               isLoading={isLoading}
+               isEmpty={isEmpty}
+
             />
           </Stack>
         </Container>

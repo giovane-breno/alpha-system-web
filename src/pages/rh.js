@@ -21,7 +21,7 @@ import { CompaniesSearch } from 'src/sections/empresas/companies-search';
 import { RhCard } from 'src/sections/rh/rh-card';
 import { RhSearch } from 'src/sections/rh/rh-search';
 import { RhTable } from 'src/sections/rh/rh-table';
-import { AccountBalance, BeachAccess, CardGiftcard, Home, LibraryAdd, NavigateNext, People, Person, PlusOne, Report } from '@mui/icons-material';
+import { AccountBalance, BeachAccess, CardGiftcard, Home, LibraryAdd, ManageAccounts, NavigateNext, People, Person, PlusOne, Report } from '@mui/icons-material';
 
 // Beneficios
 // Divisões
@@ -30,6 +30,12 @@ import { AccountBalance, BeachAccess, CardGiftcard, Home, LibraryAdd, NavigateNe
 // Funções
 // férias
 const data = [
+  {
+    url: 'rh/funcoes-administrativas',
+    title: 'Funções Administrativas',
+    description: 'Cadastro e Consulta de Funções',
+    icon: <ManageAccounts color='success' sx={{ height: 100, width: 80 }} />,
+  },
   {
     url: 'rh/funcoes',
     title: 'Funções',
@@ -131,7 +137,7 @@ const Page = () => (
             Gestão de Funcionário
           </Typography>
           <Grid container spacing={2}>
-            {data.slice(3, 8).map((rh) => {
+            {data.slice(4, 9).map((rh) => {
               return (
                 <Grid item xs={3}>
                   <RhCard title={rh.title}
@@ -148,7 +154,7 @@ const Page = () => (
             Gestão de Dados
           </Typography>
           <Grid container spacing={2}>
-            {data.slice(0, 3).map((rh) => {
+            {data.slice(0, 4).map((rh) => {
               return (
                 <Grid item xs={3}>
                   <RhCard title={rh.title}

@@ -6,11 +6,11 @@ import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { applyPagination } from 'src/utils/apply-pagination';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import { RolesSearch } from 'src/sections/rh/funcoes/roles-search';
-import { RolesTable } from 'src/sections/rh/funcoes/roles-table';
-import { CreateModal } from 'src/sections/rh/funcoes/modal/roles-create-modal';
+import { RolesSearch } from 'src/sections/rh/funcoes-administrativas/roles-search';
+import { RolesTable } from 'src/sections/rh/funcoes-administrativas/roles-table';
+import { CreateModal } from 'src/sections/rh/funcoes-administrativas/modal/roles-create-modal';
 import { Home, NavigateNext } from '@mui/icons-material';
-import { FindActiveRole } from 'src/services/HumanResourceService';
+import { FindActiveAdminRole } from 'src/services/HumanResourceService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -25,7 +25,7 @@ const breadcrumbs = [
     Recursos Humanos
   </Link>,
   <Typography key="3" color="text.primary">
-    Funções
+    Funções Administrativas
   </Typography>,
 ];
 
@@ -33,7 +33,7 @@ const Page = () => {
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState();
   const [refreshState, setRefreshState] = useState();
-  const { data, pagination, isLoading, isEmpty } = FindActiveRole(page, filter, refreshState);
+  const { data, pagination, isLoading, isEmpty } = FindActiveAdminRole(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -53,7 +53,7 @@ const Page = () => {
     <>
       <Head>
         <title>
-          Funções
+          Funções Administrativas
         </title>
       </Head>
       <Box sx={{ pl: 3, pt: 1 }}>
@@ -80,10 +80,10 @@ const Page = () => {
             >
               <Stack spacing={1}>
                 <Typography variant="h4">
-                  Funções
+                  Funções Administrativas
                 </Typography>
                 <Typography variant="subtitle1">
-                  Tabela contendo todos as Funções cadastrados.
+                  Tabela contendo todos as Funções Administrativas cadastrados.
                 </Typography>
               </Stack>
               <div>

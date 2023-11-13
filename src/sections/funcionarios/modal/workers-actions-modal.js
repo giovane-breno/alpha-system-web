@@ -46,7 +46,7 @@ const data = [
     }
 ];
 
-export const ViewModal = () => {
+export const ViewModal = ({customer}) => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -231,7 +231,7 @@ export const ViewModal = () => {
                                                 <TableRow
                                                     hover
                                                     key={customer.type}
-                                                // selected={isSelected}
+                                                //
                                                 >
                                                     <TableCell>
                                                         <Typography variant="subtitle3" sx={{ fontWeight: 'bold', color: 'secondary.main' }}>

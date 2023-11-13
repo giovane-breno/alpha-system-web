@@ -10,36 +10,11 @@ import { CreateModal } from 'src/sections/rh/divisoes/modal/divisoes-create-moda
 import { DivisoesSearch } from 'src/sections/rh/divisoes/divisoes-search';
 import { DivisoesTable } from 'src/sections/rh/divisoes/divisoes-table';
 import { Home, NavigateNext } from '@mui/icons-material';
-
-const now = new Date();
-
-const data = [
-  {
-    id: '1',
-    name: 'Tecnologia da Informação',
-    bonus: '300,00',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-  },
-  {
-    id: '2',
-    name: 'Núcleo de Gestão e Contratos',
-    bonus: '200,00',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-  }
-];
-
-const useAdmins = (page, rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(data, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  );
-};
+import { FindActiveDivision } from 'src/services/HumanResourceService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
-    <Home  />
+    <Home />
   </Link>,
   <Link
     underline="hover"
@@ -56,8 +31,9 @@ const breadcrumbs = [
 
 const Page = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const admins = useAdmins(page, rowsPerPage);
+  const [filter, setFilter] = useState();
+  const [refreshState, setRefreshState] = useState();
+  const { data, pagination, isLoading, isEmpty } = FindActiveDivision(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -116,12 +92,14 @@ const Page = () => {
             </Stack>
             <DivisoesSearch />
             <DivisoesTable
-              count={data.length}
-              items={admins}
+              count={pagination.total_pages}
+              items={data}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}
-              rowsPerPage={rowsPerPage}
+              rowsPerPage={pagination.per_page}
+              isLoading={isLoading}
+              isEmpty={isEmpty}
             />
           </Stack>
         </Container>

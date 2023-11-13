@@ -12,36 +12,11 @@ import { DivisoesTable } from 'src/sections/rh/divisoes/divisoes-table';
 import { Home, NavigateNext } from '@mui/icons-material';
 import { IncidentTable } from 'src/sections/rh/incidentes/incident-table';
 import { IncidentFilter } from 'src/sections/rh/incidentes/incident-search';
-
-const now = new Date();
-
-const data = [
-  {
-    id: '1',
-    name: 'Tecnologia da Informação',
-    bonus: '300,00',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-  },
-  {
-    id: '2',
-    name: 'Núcleo de Gestão e Contratos',
-    bonus: '200,00',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-  }
-];
-
-const useAdmins = (page, rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(data, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  );
-};
+import { FindActiveIncident } from 'src/services/HumanResourceService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
-    <Home  />
+    <Home />
   </Link>,
   <Link
     underline="hover"
@@ -58,8 +33,9 @@ const breadcrumbs = [
 
 const Page = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const admins = useAdmins(page, rowsPerPage);
+  const [filter, setFilter] = useState();
+  const [refreshState, setRefreshState] = useState();
+  const { data, pagination, isLoading, isEmpty } = FindActiveIncident(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -115,12 +91,14 @@ const Page = () => {
             </Stack>
             <IncidentFilter />
             <IncidentTable
-              count={data.length}
-              items={admins}
+              count={pagination.total_pages}
+              items={data}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}
-              rowsPerPage={rowsPerPage}
+              rowsPerPage={pagination.per_page}
+              isLoading={isLoading}
+              isEmpty={isEmpty}
             />
           </Stack>
         </Container>

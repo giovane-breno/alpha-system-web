@@ -35,23 +35,29 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Scrollbar } from "src/components/scrollbar";
+import { FetchWorkers } from "src/services/WorkersService";
 
 export const QueryDemonstrative = () => {
     useEffect(() => {
         CheckExistingCompany();
     }, []);
 
+    const CheckExistingCompany = () => {
+        let company = localStorage.getItem(('company-data'));
+        setCompany(JSON.parse(company));
+    }
+
     const [value, setValue] = useState("0");
     const [worker, setWorker] = useState("");
     const [company, setCompany] = useState("");
+
+    // const { data: workersArray } = FetchWorkers(company.id);
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
-    const CheckExistingCompany = () => {
-        let company = sessionStorage.getItem(('company-data'));
-        setCompany(JSON.parse(company));
-    }
+
 
     return (
         <Card>
@@ -75,16 +81,17 @@ export const QueryDemonstrative = () => {
                     <Box sx={{ pb: 3 }}>
                         <TextField fullWidth InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} sx={{ maxWidth: 500, display: "inline-block" }}
                             id="outlined-basic" label="Empresa Vinculada *" variant="filled"
-                            value={company && company.label}
+                            value={company && company.name}
                             error={!!(!company)}
                             helperText={!company && "Necessário selecionar uma empresa!"}
                         />
                     </Box>
-                    {company &&
+                    {company && company.id > 0 &&
                         <Box sx={{ pb: 3 }}>
                             <Autocomplete
                                 fullWidth
-                                options={top100Films}
+                                options={workersArray}
+                                getOptionLabel={option => option.full_name}
                                 value={worker}
                                 onChange={(event, newValue) => {
                                     setWorker(newValue);

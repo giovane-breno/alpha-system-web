@@ -85,7 +85,7 @@ export const RhTable = (props) => {
                     <TableRow
                       hover
                       key={customer.id}
-                      selected={isSelected}
+                     
                     >
                       <TableCell>
                         <Typography variant="subtitle3" sx={{ fontWeight: 'bold', color: 'secondary.main' }}>

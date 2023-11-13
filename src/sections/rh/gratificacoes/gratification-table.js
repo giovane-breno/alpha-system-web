@@ -8,6 +8,7 @@ import {
   Card,
   Checkbox,
   Chip,
+  CircularProgress,
   IconButton,
   Popover,
   Stack,
@@ -24,33 +25,19 @@ import { getInitials } from 'src/utils/get-initials';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import { useState } from 'react';
 import { DeleteModal, DemoteModal, MenuButton, PromoteModal, ViewModal } from './modal/gratification-actions-modal';
+import { ErrorOutline } from '@mui/icons-material';
 
 export const GratificationTable = (props) => {
   const {
     count = 0,
     items = [],
-    onDeselectAll,
-    onDeselectOne,
     onPageChange = () => { },
     onRowsPerPageChange,
-    onSelectAll,
-    onSelectOne,
-    page = 0,
+    page = 1,
     rowsPerPage = 0,
-    selected = []
+    isLoading = true,
+    isEmpty = true,
   } = props;
-
-  const selectedSome = (selected.length > 0) && (selected.length < items.length);
-  const selectedAll = (items.length > 0) && (selected.length === items.length);
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   return (
     <Card>
@@ -63,84 +50,106 @@ export const GratificationTable = (props) => {
                   Id
                 </TableCell>
                 <TableCell>
-                  Função
+                  Funcionário
                 </TableCell>
                 <TableCell>
-                  Salário Base
+                  Motivo
                 </TableCell>
                 <TableCell>
-                  Data da Criação
+                  Bonificação
+                </TableCell>
+                <TableCell>
+                  Data de Inicio
+                </TableCell>
+                <TableCell>
+                  Data de Final
                 </TableCell>
                 <TableCell>
                   Ações
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {items.map((data) => {
-                const isSelected = selected.includes(data.id);
-                const createdAt = format(data.createdAt, 'dd/MM/yyyy');
+            {!isLoading ?
+              !isEmpty ?
+                <TableBody>
+                  {items.map((data) => {
+                    return (
+                      <TableRow
+                        hover
+                        key={data.id}
 
+                      >
+                        <TableCell>
+                          <Typography variant="subtitle3" sx={{ fontWeight: 'bold', color: 'secondary.main' }}>
+                            #{data.id}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          {data.user.full_name}
+                        </TableCell>
+                        <TableCell>
+                          {data.gratification_reason}
+                        </TableCell>
+                        <TableCell>
+                          <Typography color={'success.dark'} sx={{ fontWeight: 600 }}>
+                            R$ {data.bonus}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Chip sx={{ backgroundColor: 'success.main', color: 'white' }} label={data.start_date} size='small' />
+                        </TableCell>
+                        <TableCell>
+                          <Chip sx={{ backgroundColor: 'error.main', color: 'white' }} label={data.end_date} size='small' />
+                        </TableCell>
+                        <TableCell>
+                          <ButtonGroup aria-label="outlined primary button group">
+                            <ViewModal id={data.id} />
+                            <DeleteModal id={data.id} />
+                          </ButtonGroup>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+                :
+                <TableBody>
+                  <TableCell colSpan={7}>
+                    <Box sx={{ justifyContent: 'center' }}>
+                      <Typography variant='subtitle'><ErrorOutline sx={{ verticalAlign: 'bottom' }} /> Não há dados nessa tabela.</Typography>
 
-                return (
-                  <TableRow
-                    hover
-                    key={data.id}
-                    selected={isSelected}
-                  >
-                    <TableCell>
-                      <Typography variant="subtitle3" sx={{ fontWeight: 'bold', color: 'secondary.main' }}>
-                        #{data.id}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {data.name}
-                    </TableCell>
-                    <TableCell>
-                      <Typography color={'success.dark'} sx={{ fontWeight: 600 }}>
-                        R$ {data.base_salary}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip sx={{ backgroundColor: 'info.main', color: 'white' }} label={createdAt} size='small' />
-                    </TableCell>
-                    <TableCell>
-                      <ButtonGroup aria-label="outlined primary button group">
-                        <ViewModal id={data.id} />
-                        <DeleteModal id={data.id} />
-                      </ButtonGroup>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
+                    </Box>
+                  </TableCell>
+                </TableBody>
+              :
+              <TableBody>
+                <TableCell colSpan={7}>
+                  <Box sx={{ justifyContent: 'center' }}>
+                    <CircularProgress />
+                  </Box>
+                </TableCell>
+              </TableBody>
+
+            }
           </Table>
         </Box>
       </Scrollbar>
-      <TablePagination
-        component="div"
-        shape="rounded"
-        count={count}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
+      {!isLoading && !isEmpty &&
+        <TablePagination
+          labelDisplayedRows={
+            ({ from, page, count }) => {
+              return 'Mostrando ' + from + ' de ' + count + ' itens | Página ' + (page + 1)
+            }
+          }
+          rowsPerPageOptions={-1}
+          component="div"
+          shape="rounded"
+          count={count}
+          onPageChange={onPageChange}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={onRowsPerPageChange}
+        />
+      }
     </Card>
   );
-};
-
-GratificationTable.propTypes = {
-  count: PropTypes.number,
-  items: PropTypes.array,
-  onDeselectAll: PropTypes.func,
-  onDeselectOne: PropTypes.func,
-  onPageChange: PropTypes.func,
-  onRowsPerPageChange: PropTypes.func,
-  onSelectAll: PropTypes.func,
-  onSelectOne: PropTypes.func,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  selected: PropTypes.array
 };
