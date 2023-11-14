@@ -30,9 +30,9 @@ export const FindActiveWorkers = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`user?page=${page+1}`)
+            .get(`user?page=${page + 1}`)
             .then((response) => {
-                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
+                response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
                 setPagination(response.data.data.paginate);
                 setIsLoading(false);
@@ -54,9 +54,9 @@ export const FindActiveAdmins = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`user/a?page=${page+1}`)
+            .get(`user/a?page=${page + 1}`)
             .then((response) => {
-                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
+                response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
                 setPagination(response.data.data.paginate);
                 setIsLoading(false);
@@ -68,4 +68,24 @@ export const FindActiveAdmins = (page, filter, refreshState) => {
     }, [page, filter, refreshState]);
 
     return { data, pagination, isLoading, isEmpty };
+};
+
+export const CreateWorker = async (name, socialName, cnpj, town, state, cep, street, district, city, houseNumber, complement, references) => {
+    const request = await api
+        .post("/user", {
+            name: name,
+            socialName: socialName,
+            cnpj: cnpj,
+            town: town,
+            state: state,
+            cep: cep,
+            street: street,
+            district: district,
+            city: city,
+            houseNumber: houseNumber,
+            complement: complement,
+            references: references
+        });
+
+    return { data: request.data.data, status: request.data.status };
 };

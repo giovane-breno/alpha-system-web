@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { withAuthGuard } from 'src/hocs/with-auth-guard';
 import { SideNav } from './side-nav';
 import { TopNav } from './top-nav';
+import { SnackbarProvider } from 'notistack';
 
 const SIDE_NAV_WIDTH = 280;
 
@@ -47,16 +48,22 @@ export const Layout = withAuthGuard((props) => {
 
   return (
     <>
-      <TopNav onNavOpen={() => setOpenNav(true)} />
-      <SideNav
-        onClose={() => setOpenNav(false)}
-        open={openNav}
-      />
-      <LayoutRoot>
-        <LayoutContainer>
-          {children}
-        </LayoutContainer>
-      </LayoutRoot>
+      <SnackbarProvider autoHideDuration={3000}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}>
+        <TopNav onNavOpen={() => setOpenNav(true)} />
+        <SideNav
+          onClose={() => setOpenNav(false)}
+          open={openNav}
+        />
+        <LayoutRoot>
+          <LayoutContainer>
+            {children}
+          </LayoutContainer>
+        </LayoutRoot>
+      </SnackbarProvider>
     </>
   );
 });

@@ -43,3 +43,25 @@ export const FetchCompanies = () => {
 
     return { data, isLoading, isEmpty };
 }
+
+export const QueryCEP = async (cep) => {
+    const url = `https://viacep.com.br/ws/${cep}/json/`;
+    const request = await axios
+        .get(url);
+
+    return { data: request.data };
+};
+
+export const CreateCompany = async (name, corporate_name, cnpj, town, state, address) => {
+    const request = await api
+        .post("/company", {
+            name: name,
+            corporate_name: corporate_name,
+            CNPJ: cnpj,
+            town_registration: town,
+            state_registration: state,
+            address: address,
+        });
+
+    return { data: request.data.data, status: request.data.status };
+};
