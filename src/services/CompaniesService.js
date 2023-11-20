@@ -2,6 +2,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import api from "../api";
 
+export const CheckExistingCompany = () => {
+    let company = localStorage.getItem(('company-data'));
+    return (JSON.parse(company));
+}
+
 export const FindActiveCompanies = (page, filter, refreshState) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
@@ -52,16 +57,23 @@ export const QueryCEP = async (cep) => {
     return { data: request.data };
 };
 
-export const CreateCompany = async (name, corporate_name, cnpj, town, state, address) => {
+export const CreateCompany = async (form) => {
     const request = await api
         .post("/company", {
-            name: name,
-            corporate_name: corporate_name,
-            CNPJ: cnpj,
-            town_registration: town,
-            state_registration: state,
-            address: address,
+            name: form.name,
+            corporate_name: form.corporate_name,
+            CNPJ: form.cnpj,
+            town_registration: form.town,
+            state_registration: form.state,
+            address: {
+                cep: form.cep, street: form.street, district: form.district, city: form.city,
+                house_number: form.houseNumber, complement: form.complement, references: form.references
+            },
         });
-
     return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteCompany = async (id) => {
+    const request = await api.delete(`company/${id}`);
+    return { data: request.data, status: request.data.status };
 };

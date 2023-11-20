@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { subDays, subHours } from 'date-fns';
 import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography } from '@mui/material';
@@ -10,6 +10,7 @@ import { Home, NavigateNext } from '@mui/icons-material';
 import { GratificationFilter } from 'src/sections/rh/gratificacoes/gratification-search';
 import { GratificationTable } from 'src/sections/rh/gratificacoes/gratification-table';
 import { FindActiveGratification } from 'src/services/HumanResourceService';
+import { CheckExistingCompany } from 'src/services/CompaniesService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -29,10 +30,15 @@ const breadcrumbs = [
 ];
 
 const Page = () => {
+  useEffect(() => {
+    setCompany(CheckExistingCompany());
+  }, []);
+
+  const [company, setCompany] = useState();
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState();
   const [refreshState, setRefreshState] = useState();
-  const { data, pagination, isLoading, isEmpty } = FindActiveGratification(page, filter, refreshState);
+  const { data, pagination, isLoading, isEmpty } = FindActiveGratification(page, filter, refreshState, company);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -85,7 +91,7 @@ const Page = () => {
                 </Typography>
               </Stack>
             </Stack>
-            <GratificationFilter />
+            <GratificationFilter filter={filter} setFilter={setFilter}/>
             <GratificationTable
               count={pagination.total_pages}
               items={data}

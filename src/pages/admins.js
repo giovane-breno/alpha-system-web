@@ -92,7 +92,7 @@ const Page = () => {
                 </Button>
               </div>
             </Stack>
-            <AdminsSearch />
+            <AdminsSearch filter={filter} setFilter={setFilter}/>
             <AdminsTable
                count={pagination.total_pages}
                items={data}

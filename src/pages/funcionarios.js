@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { subDays, subHours } from 'date-fns';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
@@ -12,6 +12,7 @@ import { CustomersSearch, WorkersSearch } from 'src/sections/funcionarios/worker
 import { applyPagination } from 'src/utils/apply-pagination';
 import { Home, NavigateNext } from '@mui/icons-material';
 import { FindActiveWorkers } from 'src/services/WorkersService';
+import { CheckExistingCompany } from 'src/services/CompaniesService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -23,10 +24,15 @@ const breadcrumbs = [
 ];
 
 const Page = () => {
+  useEffect(() => {
+    setCompany(CheckExistingCompany());
+  }, []);
+
+  const [company, setCompany] = useState();
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState();
-  const [refreshState, setRefreshState] = useState();
-  const { data, pagination, isLoading, isEmpty } = FindActiveWorkers(page, filter, refreshState);
+  const [refreshState, setRefreshState] = useState(true);
+  const { data, pagination, isLoading, isEmpty } = FindActiveWorkers(page, filter, refreshState, company);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -96,7 +102,7 @@ const Page = () => {
                 </Link>
               </div>
             </Stack>
-            <WorkersSearch />
+            <WorkersSearch filter={filter} setFilter={setFilter}/>
             <WorkersTable
               count={pagination.total_pages}
               items={data}
@@ -106,8 +112,11 @@ const Page = () => {
               rowsPerPage={pagination.per_page}
               isLoading={isLoading}
               isEmpty={isEmpty}
+
+              refreshState={refreshState}
+              setRefreshState={setRefreshState}
             />
-            
+
           </Stack>
         </Container >
       </Box >

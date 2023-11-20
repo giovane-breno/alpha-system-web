@@ -18,7 +18,7 @@ const Page = () => {
         <>
             <Head>
                 <title>
-                    Cadastrar Empresa
+                    Cadastrar Funcionário
                 </title>
             </Head>
             <Box
@@ -37,14 +37,14 @@ const Page = () => {
                         >
                             <Stack spacing={1}>
                                 <Typography variant="h4">
-                                    Cadastrar Empresa
+                                    Cadastrar Funcionário
                                 </Typography>
                                 <Typography variant="subtitle1">
-                                    Cadastro de uma nova empresa.
+                                    Cadastro de um novo funcionário.
                                 </Typography>
                             </Stack>
                         </Stack>
-                        <CompaniesForm />
+                        <WorkerForm/>
                     </Stack>
                 </Container>
             </Box >

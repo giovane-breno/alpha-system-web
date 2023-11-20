@@ -95,7 +95,6 @@ export const FindCustomer = async (id) => {
 export const DeleteCustomer = async (id) => {
     const request = await api.delete(`customer/${id}`);
     return { data: request.data, status: request.data.status };
-
 };
 
 export const GetAdressfromAPI = async (cep) => {

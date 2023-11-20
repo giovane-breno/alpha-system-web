@@ -1,29 +1,60 @@
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
-import { FilterList, MoreHoriz } from '@mui/icons-material';
-import { Autocomplete, Box, Button, Card, Chip, Collapse, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Radio, RadioGroup, Select, SvgIcon, Switch, Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs, TextField, Typography } from '@mui/material';
+import { Delete, FilterList, Info, MoreHoriz } from '@mui/icons-material';
+import { Autocomplete, Box, Button, Card, Chip, Collapse, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Radio, RadioGroup, Select, SvgIcon, Switch, Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs, TextField, Tooltip, Typography } from '@mui/material';
+import { isEmptyArray } from 'formik';
+import { enqueueSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { Scrollbar } from 'src/components/scrollbar';
+import { CheckExistingCompany } from 'src/services/CompaniesService';
+import { doWorkersPayment } from 'src/services/FinanceService';
+import { FetchWorkers } from 'src/services/WorkersService';
 
 export const GenerateDemonstrative = () => {
   useEffect(() => {
-    CheckExistingCompany();
+    setFormHeader({
+      ...formHeader,
+      company: CheckExistingCompany(),
+    });
   }, []);
 
-  const [value, setValue] = useState("0");
-  const [worker, setWorker] = useState("");
-  const [company, setCompany] = useState('');
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  const [formHeader, setFormHeader] = useState({
+    company: null,
+    option: 'all',
+    worker: null,
+  });
 
-  const CheckExistingCompany = () => {
-    let company = localStorage.getItem(('company-data'));
-    setCompany(JSON.parse(company));
-  }
-  const [type, setType] = useState('all');
+  const { data: workersArray } = FetchWorkers(formHeader.company);
 
-  const handleRadioChange = (event) => {
-    setType(event.target.value);
+  const doPayment = async () => {
+    try {
+      const { data, status } = await doWorkersPayment(formHeader.worker?.id);
+      if (status === 'success') {
+        if (formHeader.worker?.id) {
+          enqueueSnackbar(`Demonstrativo de ${formHeader.worker.full_name} gerado com sucesso!`, { variant: 'success', position: 'top-right' });
+        } else {
+          enqueueSnackbar('Demonstrativos gerados com sucesso!', { variant: 'success', position: 'top-right' });
+
+          data?.generated > 0 &&
+            enqueueSnackbar(`${data?.generated} holerites foram gerados!`, { variant: 'info', position: 'top-right' });
+
+          data?.not_generated > 0 &&
+            enqueueSnackbar(`${data?.not_generated} holerites não foram gerados!`, { variant: 'warning', position: 'top-right' });
+
+        }
+
+        setFormHeader({
+          ...formHeader,
+          worker: null,
+        })
+
+      }
+    } catch (error) {      
+      if (formHeader.worker?.id) {
+        enqueueSnackbar(`O funcionário selecionado já possui o holerite desse mês.`, { variant: 'error', position: 'top-right' });
+      } else {
+        enqueueSnackbar('Houve um erro ao gerar holerites.', { variant: 'error', position: 'top-right' });
+      }
+    }
   };
 
   return (
@@ -37,22 +68,33 @@ export const GenerateDemonstrative = () => {
           <Box sx={{ pb: 3 }}>
             <TextField fullWidth InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} sx={{ maxWidth: 500, display: "inline-block" }}
               id="outlined-basic" label="Empresa Vinculada *" variant="filled"
-              value={company && company.name}
-              error={!!(!company)}
-              helperText={!company && "Necessário selecionar uma empresa!"}
+              value={formHeader.company && formHeader.company.name}
+              error={!!(!formHeader.company)}
+              helperText={!formHeader.company && "Necessário selecionar uma empresa!"}
             />
           </Box>
-          {company &&
+          {formHeader.company &&
             <Box>
               <FormGroup>
-                <FormLabel component="legend">Área de Abrangência</FormLabel>
+                <FormLabel component="legend">Área de Abrangência
+                  <Tooltip title="Área de Abrangência, sendo todos os funcionários da empresa selecionada ou um funcionário individual.">
+                    <IconButton>
+                      <Info />
+                    </IconButton>
+                  </Tooltip>
+                </FormLabel>
                 <RadioGroup
                   aria-labelledby="demo-radio-buttons-group-label"
                   defaultValue="all"
                   name="radio-buttons-group"
-                  value={type}
-                  onChange={handleRadioChange}
-                >
+                  value={formHeader.option}
+                  onChange={(e, value) => {
+                    setFormHeader({
+                      ...formHeader,
+                      worker: null,
+                      option: value,
+                    });
+                  }}                >
                   <FormControlLabel value="all" control={<Radio />} label="Todos" />
                   <FormControlLabel value="one" control={<Radio />} label="Individual" />
                 </RadioGroup>
@@ -61,28 +103,39 @@ export const GenerateDemonstrative = () => {
           }
         </Grid>
       </Grid>
-      {type === 'one' &&
+
+      {formHeader.option === 'one' &&
         <Divider />
       }
       <Grid container spacing={2} p={2}>
         <Grid item md={4} xs={0} />
         <Grid item md={8} xs={12}>
-          <Collapse in={!!(type === 'one')}>
+          <Collapse in={!!(formHeader.option === 'one')}>
             <Box sx={{ pb: 3 }}>
               <Box sx={{ mb: 2 }}>
                 <Typography variant='subtitle'>Demonstrativo Individual</Typography>
               </Box>
-              <Autocomplete
-                fullWidth
-                readOnly
-                options={months2}
-                sx={{ maxWidth: 500, display: 'inline-block' }}
-                renderInput={(params) => <TextField required {...params} label="Funcionário" helperText="Selecione o funcionário para gerar o Demonstrativo." />}
-              />
+              {!!(!isEmptyArray(workersArray)) &&
+                <Autocomplete
+                  fullWidth
+                  options={workersArray}
+                  getOptionLabel={option => option.full_name}
+                  value={formHeader.worker}
+                  onChange={(e, value) => {
+                    setFormHeader({
+                      ...formHeader,
+                      worker: value,
+                    });
+                  }}
+                  sx={{ maxWidth: 500, display: "inline-block" }}
+                  renderInput={(params) => <TextField {...params} label="Funcionário *" />}
+                />
+              }
+
             </Box>
           </Collapse>
           <Box>
-            <Button variant="contained" fullWidth color='warning' disabled={!!(!company)} sx={{ maxWidth: 500 }}>Gerar Demonstrativo</Button>
+            <Button variant="contained" onClick={doPayment} fullWidth color='warning' disabled={!!(!formHeader.company)} sx={{ maxWidth: 500 }}>Gerar Demonstrativo</Button>
           </Box>
         </Grid>
       </Grid>
@@ -90,161 +143,3 @@ export const GenerateDemonstrative = () => {
     </Card >
   );
 };
-
-
-const months = [
-  { label: 'Janeiro' },
-  { label: 'Fevereiro' },
-  { label: 'Março' },
-  { label: 'Abril' },
-  { label: 'Maio' },
-  { label: 'Junho' },
-  { label: 'Julho' },
-  { label: 'Agosto' },
-  { label: 'Setembro' },
-  { label: 'Outubro' },
-  { label: 'Novembro' },
-  { label: 'Dezembro' }
-];
-
-const months2 = [
-  { label: 'Janeiro' },
-  { label: 'Fevereiro' },
-  { label: 'Março' },
-  { label: 'Abril' },
-  { label: 'Maio' },
-  { label: 'Junho' },
-  { label: 'Julho' },
-  { label: 'Agosto' },
-  { label: 'Setembro' },
-  { label: 'Outubro' },
-  { label: 'Novembro' },
-  { label: 'Dezembro' }
-];
-
-const top100Films = [
-  { label: 'The Shawshank Redemption', year: 1994 },
-  { label: 'The Godfather', year: 1972 },
-  { label: 'The Godfather: Part II', year: 1974 },
-  { label: 'The Dark Knight', year: 2008 },
-  { label: '12 Angry Men', year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: 'Pulp Fiction', year: 1994 },
-  {
-    label: 'The Lord of the Rings: The Return of the King',
-    year: 2003,
-  },
-  { label: 'The Good, the Bad and the Ugly', year: 1966 },
-  { label: 'Fight Club', year: 1999 },
-  {
-    label: 'The Lord of the Rings: The Fellowship of the Ring',
-    year: 2001,
-  },
-  {
-    label: 'Star Wars: Episode V - The Empire Strikes Back',
-    year: 1980,
-  },
-  { label: 'Forrest Gump', year: 1994 },
-  { label: 'Inception', year: 2010 },
-  {
-    label: 'The Lord of the Rings: The Two Towers',
-    year: 2002,
-  },
-  { label: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { label: 'Goodfellas', year: 1990 },
-  { label: 'The Matrix', year: 1999 },
-  { label: 'Seven Samurai', year: 1954 },
-  {
-    label: 'Star Wars: Episode IV - A New Hope',
-    year: 1977,
-  },
-  { label: 'City of God', year: 2002 },
-  { label: 'Se7en', year: 1995 },
-  { label: 'The Silence of the Lambs', year: 1991 },
-  { label: "It's a Wonderful Life", year: 1946 },
-  { label: 'Life Is Beautiful', year: 1997 },
-  { label: 'The Usual Suspects', year: 1995 },
-  { label: 'Léon: The Professional', year: 1994 },
-  { label: 'Spirited Away', year: 2001 },
-  { label: 'Saving Private Ryan', year: 1998 },
-  { label: 'Once Upon a Time in the West', year: 1968 },
-  { label: 'American History X', year: 1998 },
-  { label: 'Interstellar', year: 2014 },
-  { label: 'Casablanca', year: 1942 },
-  { label: 'City Lights', year: 1931 },
-  { label: 'Psycho', year: 1960 },
-  { label: 'The Green Mile', year: 1999 },
-  { label: 'The Intouchables', year: 2011 },
-  { label: 'Modern Times', year: 1936 },
-  { label: 'Raiders of the Lost Ark', year: 1981 },
-  { label: 'Rear Window', year: 1954 },
-  { label: 'The Pianist', year: 2002 },
-  { label: 'The Departed', year: 2006 },
-  { label: 'Terminator 2: Judgment Day', year: 1991 },
-  { label: 'Back to the Future', year: 1985 },
-  { label: 'Whiplash', year: 2014 },
-  { label: 'Gladiator', year: 2000 },
-  { label: 'Memento', year: 2000 },
-  { label: 'The Prestige', year: 2006 },
-  { label: 'The Lion King', year: 1994 },
-  { label: 'Apocalypse Now', year: 1979 },
-  { label: 'Alien', year: 1979 },
-  { label: 'Sunset Boulevard', year: 1950 },
-  {
-    label: 'Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb',
-    year: 1964,
-  },
-  { label: 'The Great Dictator', year: 1940 },
-  { label: 'Cinema Paradiso', year: 1988 },
-  { label: 'The Lives of Others', year: 2006 },
-  { label: 'Grave of the Fireflies', year: 1988 },
-  { label: 'Paths of Glory', year: 1957 },
-  { label: 'Django Unchained', year: 2012 },
-  { label: 'The Shining', year: 1980 },
-  { label: 'WALL·E', year: 2008 },
-  { label: 'American Beauty', year: 1999 },
-  { label: 'The Dark Knight Rises', year: 2012 },
-  { label: 'Princess Mononoke', year: 1997 },
-  { label: 'Aliens', year: 1986 },
-  { label: 'Oldboy', year: 2003 },
-  { label: 'Once Upon a Time in America', year: 1984 },
-  { label: 'Witness for the Prosecution', year: 1957 },
-  { label: 'Das Boot', year: 1981 },
-  { label: 'Citizen Kane', year: 1941 },
-  { label: 'North by Northwest', year: 1959 },
-  { label: 'Vertigo', year: 1958 },
-  {
-    label: 'Star Wars: Episode VI - Return of the Jedi',
-    year: 1983,
-  },
-  { label: 'Reservoir Dogs', year: 1992 },
-  { label: 'Braveheart', year: 1995 },
-  { label: 'M', year: 1931 },
-  { label: 'Requiem for a Dream', year: 2000 },
-  { label: 'Amélie', year: 2001 },
-  { label: 'A Clockwork Orange', year: 1971 },
-  { label: 'Like Stars on Earth', year: 2007 },
-  { label: 'Taxi Driver', year: 1976 },
-  { label: 'Lawrence of Arabia', year: 1962 },
-  { label: 'Double Indemnity', year: 1944 },
-  {
-    label: 'Eternal Sunshine of the Spotless Mind',
-    year: 2004,
-  },
-  { label: 'Amadeus', year: 1984 },
-  { label: 'To Kill a Mockingbird', year: 1962 },
-  { label: 'Toy Story 3', year: 2010 },
-  { label: 'Logan', year: 2017 },
-  { label: 'Full Metal Jacket', year: 1987 },
-  { label: 'Dangal', year: 2016 },
-  { label: 'The Sting', year: 1973 },
-  { label: '2001: A Space Odyssey', year: 1968 },
-  { label: "Singin' in the Rain", year: 1952 },
-  { label: 'Toy Story', year: 1995 },
-  { label: 'Bicycle Thieves', year: 1948 },
-  { label: 'The Kid', year: 1921 },
-  { label: 'Inglourious Basterds', year: 2009 },
-  { label: 'Snatch', year: 2000 },
-  { label: '3 Idiots', year: 2009 },
-  { label: 'Monty Python and the Holy Grail', year: 1975 },
-];

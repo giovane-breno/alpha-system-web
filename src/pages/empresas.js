@@ -98,7 +98,7 @@ const Page = () => {
                 </Link>
               </div>
             </Stack>
-            <CompaniesSearch />
+            <CompaniesSearch filter={filter} setFilter={setFilter}/>
             <CompaniesTable
               count={pagination.total_pages}
               items={data}
@@ -108,6 +108,9 @@ const Page = () => {
               rowsPerPage={pagination.per_page}
               isLoading={isLoading}
               isEmpty={isEmpty}
+
+              refreshState={refreshState}
+              setRefreshState={setRefreshState}
             />
           </Stack>
         </Container>

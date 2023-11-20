@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import api from "../api";
 
 
-export const FindActiveVacation = (page, filter, refreshState) => {
+export const FindActiveVacation = (page, filter, refreshState, company) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [data, setData] = useState([]);
@@ -11,7 +11,7 @@ export const FindActiveVacation = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`vacation?page=${page + 1}`)
+            .get(`vacation?page=${page + 1}&company=${company?.id}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -27,7 +27,7 @@ export const FindActiveVacation = (page, filter, refreshState) => {
     return { data, pagination, isLoading, isEmpty };
 };
 
-export const FindActiveGratification = (page, filter, refreshState) => {
+export const FindActiveGratification = (page, filter, refreshState, company) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [data, setData] = useState([]);
@@ -35,7 +35,7 @@ export const FindActiveGratification = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`gratification?page=${page + 1}`)
+            .get(`gratification?page=${page + 1}&company=${company?.id}`)
             .then((response) => {
                 console.log(response);
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
@@ -52,7 +52,7 @@ export const FindActiveGratification = (page, filter, refreshState) => {
     return { data, pagination, isLoading, isEmpty };
 };
 
-export const FindActiveIncident = (page, filter, refreshState) => {
+export const FindActiveIncident = (page, filter, refreshState, company) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [data, setData] = useState([]);
@@ -60,7 +60,7 @@ export const FindActiveIncident = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`incident?page=${page + 1}`)
+            .get(`incident?page=${page + 1}&company=${company?.id}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -76,7 +76,7 @@ export const FindActiveIncident = (page, filter, refreshState) => {
     return { data, pagination, isLoading, isEmpty };
 };
 
-export const FindActiveBenefit = (page, filter, refreshState) => {
+export const FindActiveBenefit = (page, filter, refreshState, company) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [data, setData] = useState([]);
@@ -84,7 +84,7 @@ export const FindActiveBenefit = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`benefit?page=${page + 1}`)
+            .get(`benefit?page=${page + 1}&company=${company?.id}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -100,7 +100,7 @@ export const FindActiveBenefit = (page, filter, refreshState) => {
     return { data, pagination, isLoading, isEmpty };
 };
 
-export const FindActiveBenefitType = (page, filter, refreshState) => {
+export const FindActiveBenefitType = (page, filter, refreshState, company) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [data, setData] = useState([]);
@@ -108,7 +108,7 @@ export const FindActiveBenefitType = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`benefit/t?page=${page + 1}`)
+            .get(`benefit/t?page=${page + 1}&company=${company?.id}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -124,7 +124,7 @@ export const FindActiveBenefitType = (page, filter, refreshState) => {
     return { data, pagination, isLoading, isEmpty };
 };
 
-export const FindActiveAdminRole = (page, filter, refreshState) => {
+export const FindActiveAdminRole = (page, filter, refreshState, company) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [data, setData] = useState([]);
@@ -132,7 +132,7 @@ export const FindActiveAdminRole = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`admin_role?page=${page + 1}`)
+            .get(`admin_role?page=${page + 1}&company=${company?.id}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -148,7 +148,7 @@ export const FindActiveAdminRole = (page, filter, refreshState) => {
     return { data, pagination, isLoading, isEmpty };
 };
 
-export const FindActiveRole = (page, filter, refreshState) => {
+export const FindActiveRole = (page, filter, refreshState, company) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [data, setData] = useState([]);
@@ -156,7 +156,7 @@ export const FindActiveRole = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`role?page=${page + 1}`)
+            .get(`role?page=${page + 1}&company=${company?.id}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -172,7 +172,7 @@ export const FindActiveRole = (page, filter, refreshState) => {
     return { data, pagination, isLoading, isEmpty };
 };
 
-export const FindActiveDivision = (page, filter, refreshState) => {
+export const FindActiveDivision = (page, filter, refreshState, company) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [data, setData] = useState([]);
@@ -180,7 +180,7 @@ export const FindActiveDivision = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`division?page=${page + 1}`)
+            .get(`division?page=${page + 1}&company=${company?.id}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);

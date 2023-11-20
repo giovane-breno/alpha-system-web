@@ -6,6 +6,8 @@ import Modal from '@mui/material/Modal';
 import { Autocomplete, Divider, Grid, IconButton, InputAdornment, SvgIcon, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField } from '@mui/material';
 import { Close, Delete, Done, Edit, Info, Remove, Visibility } from '@mui/icons-material';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
+import { DeleteCompanies, DeleteCompany } from 'src/services/CompaniesService';
+import { enqueueSnackbar } from 'notistack';
 
 const large = {
     position: 'absolute',
@@ -23,7 +25,7 @@ const small = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '25%', 
+    width: '25%',
     bgcolor: 'background.paper',
     borderRadius: '.3rem',
     boxShadow: 24,
@@ -172,10 +174,27 @@ export const ViewModal = () => {
     );
 }
 
-export const DeleteModal = () => {
+export const DeleteModal = ({ id, refreshState, setRefreshState }) => {
     const [open, setOpen] = React.useState(false);
+    const [error, setError] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    const deleteForm = async () => {
+        try {
+            const { status } = await DeleteCompany(id);
+            if (status === 'success') {
+                refreshState = setRefreshState(!refreshState);
+                enqueueSnackbar('Empresa deletada com sucesso!', { variant: 'success', position: 'top-right' });
+                setError("");
+            }
+        } catch (error) {
+            enqueueSnackbar('Verifique os erros!', { variant: 'error', position: 'top-right' });
+            const path = error.response.data.errors;
+            setError(path);
+        }
+    }
+
 
     return (
         <div>
@@ -218,7 +237,7 @@ export const DeleteModal = () => {
                             <Button onClick={handleClose} variant="contained" startIcon={<Close />} sx={{ mr: 1, backgroundColor: 'neutral.700', "&:hover": { backgroundColor: "neutral.800" } }}>
                                 Cancelar
                             </Button>
-                            <Button variant="contained" color='error' startIcon={<Delete />} >
+                            <Button variant="contained" color='error' onClick={deleteForm} startIcon={<Delete />} >
                                 Deletar
                             </Button>
                         </Box>

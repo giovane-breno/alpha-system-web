@@ -4,24 +4,133 @@ import { Autocomplete, Box, Button, Card, CardMedia, Divider, FormControl, FormC
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { ptBR } from '@mui/x-date-pickers/locales';
+import { enqueueSnackbar } from 'notistack';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactInputMask from 'react-input-mask';
+import { QueryCEP } from 'src/services/CompaniesService';
+import { CreateWorker, FetchDivisions, FetchRoles } from 'src/services/WorkersService';
 
 
 export const WorkerForm = () => {
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleOpenMenu = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const openMenu = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const { data: divisions, isLoading: divisionsLoading } = FetchDivisions();
+    const { data: roles, isLoading: rolesLoading } = FetchRoles();
+    const [error, setError] = useState("");
+
+    const [form, setForm] = useState({
+        name: '',
+        email: '',
+        cpf: '',
+        ctps: '',
+        pis: '',
+        gender: '',
+        bornAt: '',
+        marital: '',
+        scholarity: '',
+        phone: '',
+
+        company: '',
+        role: null,
+        division: null,
+
+        cep: '',
+        street: '',
+        district: '',
+        city: '',
+        houseNumber: '',
+        complement: '',
+        references: '',
+    });
+
+    const CheckExistingCompany = () => {
+        let company = localStorage.getItem(('company-data'));
+        setForm({
+            ...form,
+            company: JSON.parse(company),
+        });
+    }
+
+    useEffect(() => {
+        CheckExistingCompany();
+    }, []);
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(async () => {
+            if (form.cep && (form.cep.length == 9)) {
+                const cepReplaced = form.cep.replace('-', '');
+                const { data } = await QueryCEP(cepReplaced);
+                if (!data.erro) {
+                    enqueueSnackbar('CEP encontrado com sucesso!', { variant: 'info', position: 'top-right' });
+                    setForm({
+                        ...form,
+                        street: data.logradouro,
+                        district: data.bairro,
+                        city: data.localidade
+                    });
+
+                } else {
+                    enqueueSnackbar('O CEP não foi encontrado!', { variant: 'error', position: 'top-right' });
+
+                    setForm({
+                        ...form,
+                        street: '',
+                        district: '',
+                        city: ''
+                    });
+
+                    setError({
+                        ...error,
+                        'address.cep': "O CEP não foi encontrado!",
+                    })
+                }
+            }
+
+        }, 1000)
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [form.cep]);
+
+    const saveForm = async () => {
+        try {
+            const { status } = await CreateWorker(form);
+            if (status === 'success') {
+                enqueueSnackbar('Empresa cadastrada com sucesso!', { variant: 'success', position: 'top-right' });
+
+                setError("");
+                setForm({
+                    ...form,
+                    name: '',
+                    email: '',
+                    cpf: '',
+                    ctps: '',
+                    pis: '',
+                    gender: '',
+                    bornAt: '',
+                    marital: '',
+                    scholarity: '',
+                    phone: '',
+
+                    role: null,
+                    division: null,
+
+                    cep: '',
+                    street: '',
+                    district: '',
+                    city: '',
+                    houseNumber: '',
+                    complement: '',
+                    references: '',
+                });
+
+            }
+        } catch (error) {
+            enqueueSnackbar('Verifique os erros do formulário!', { variant: 'error', position: 'top-right' });
+            const path = error.response.data.errors;
+            setError(path);
+        }
+
+    }
+
 
     return (
 
@@ -33,85 +142,137 @@ export const WorkerForm = () => {
                         <Divider sx={{ mb: 2 }} />
                         <Grid container spacing={2} sx={{ mb: 2 }}>
                             <Grid item xs={6}>
-                                <TextField fullWidth label="Nome" variant="outlined" required />
+                                <TextField fullWidth label="Nome" variant="outlined" required value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }) }} error={!!(error?.name)} helperText={error?.name} />
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField fullWidth label="Email" variant="outlined" required />
+                                <TextField fullWidth label="Email" variant="outlined" required value={form.email} onChange={e => { setForm({ ...form, email: e.target.value }) }} error={!!(error?.email)} helperText={error?.email} />
                             </Grid>
                             <Grid item xs={4}>
                                 <ReactInputMask
                                     mask="999.999.999-99"
-                                // value={this.state.phone}
-                                // onChange={this.onChange}
+                                    value={form.cpf}
+                                    onChange={e => {
+                                        setForm({
+                                            ...form,
+                                            cpf: e.target.value,
+                                        });
+                                    }}
                                 >
-                                    {() => <TextField fullWidth label="CPF" variant="outlined" required />
+                                    {() => <TextField fullWidth label="CPF" variant="outlined" required error={!!(error?.cpf)} helperText={error?.cpf} />
                                     }
                                 </ReactInputMask>
                             </Grid>
                             <Grid item xs={4}>
                                 <ReactInputMask
                                     mask="9999999/9999"
-                                // value={this.state.phone}
-                                // onChange={this.onChange}
+                                    value={form.ctps}
+                                    onChange={e => {
+                                        setForm({
+                                            ...form,
+                                            ctps: e.target.value,
+                                        });
+                                    }}
                                 >
-                                    {() => <TextField fullWidth label="CTPS" variant="outlined" required />
+                                    {() => <TextField fullWidth label="CTPS" variant="outlined" required error={!!(error?.ctps)} helperText={error?.ctps} />
                                     }
                                 </ReactInputMask>
                             </Grid>
                             <Grid item xs={4}>
                                 <ReactInputMask
                                     mask="999.99999.99-9"
-                                // value={this.state.phone}
-                                // onChange={this.onChange}
+                                    value={form.pis}
+                                    onChange={e => {
+                                        setForm({
+                                            ...form,
+                                            pis: e.target.value,
+                                        });
+                                    }}
                                 >
-                                    {() => <TextField fullWidth label="PIS" variant="outlined" required />
+                                    {() => <TextField fullWidth label="PIS" variant="outlined" required error={!!(error?.pis)} helperText={error?.pis} />
                                     }
                                 </ReactInputMask>
                             </Grid>
                             <Grid item xs={12}>
                                 <Autocomplete
                                     fullWidth
-                                    options={gender}
+                                    options={list_gender}
                                     sx={{ display: 'inline-block' }}
-                                    renderInput={(params) => <TextField {...params} label="Gênero" required />}
+                                    value={form.gender}
+                                    onChange={(e, value) => {
+                                        setForm({
+                                            ...form,
+                                            gender: value.label,
+                                        });
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Gênero" required error={!!(error?.gender)} helperText={error?.gender} />}
                                 />
                             </Grid>
                             <Grid item xs={6}>
                                 <LocalizationProvider dateAdapter={AdapterDateFns} localeText={ptBR.components.MuiLocalizationProvider.defaultProps.localeText}>
-                                    <DatePicker label="Data de Nascimento" variant="outlined" slotProps={{
-                                        textField: {
-                                            fullWidth: 'true',
-                                            required: 'true',
-                                        },
-                                    }} />
+                                    <DatePicker label="Data de Nascimento" variant="outlined" format="dd/MM/yyyy"
+                                        disableFuture
+                                        value={form.bornAt}
+                                        onChange={(e) => {
+                                            setForm({
+                                                ...form,
+                                                bornAt: e,
+                                            });
+                                        }} slotProps={{
+                                            textField: {
+                                                fullWidth: 'true',
+                                                required: 'true',
+                                                error: !!(error?.born_at),
+                                                helperText: error?.born_at
+                                            },
+                                        }}
+
+                                    />
                                 </LocalizationProvider>
                             </Grid>
                             <Grid item xs={6}>
                                 <Autocomplete
                                     fullWidth
-                                    options={marital_status}
+                                    options={list_marital_status}
                                     sx={{ display: 'inline-block' }}
-                                    renderInput={(params) => <TextField {...params} label="Estado Civil" required />}
+                                    value={form.marital}
+                                    onChange={(e, value) => {
+                                        setForm({
+                                            ...form,
+                                            marital: value.label,
+                                        });
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Estado Civil" required error={!!(error?.marital_status)} helperText={error?.marital_status} />}
                                 />
                             </Grid>
                             <Grid item xs={6}>
                                 <Autocomplete
                                     fullWidth
-                                    options={scholarity}
+                                    options={list_scholarity}
                                     sx={{ display: 'inline-block' }}
-                                    renderInput={(params) => <TextField {...params} label="Escolaridade" required />}
-                                />
+                                    value={form.scholarity}
+                                    onChange={(e, value) => {
+                                        setForm({
+                                            ...form,
+                                            scholarity: value.label,
+                                        });
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Escolaridade" required error={!!(error?.education_level)} helperText={error?.education_level} />} />
                             </Grid>
                             <Grid item xs={6}>
                                 <ReactInputMask
-                                    mask="(99)99999-9999"
-                                // value={this.state.phone}
-                                // onChange={this.onChange}
+                                    mask="(99) 99999-9999"
+                                    value={form.phone}
+                                    onChange={e => {
+                                        setForm({
+                                            ...form,
+                                            phone: e.target.value,
+                                        });
+                                    }}
                                 >
                                     {() => <TextField
                                         fullWidth
                                         label={"Telefone / Celular"}
-                                        variant="outlined" required />}
+                                        variant="outlined" required error={!!(error?.phones?.phone_number)} helperText={error?.phones?.phone_number} />}
                                 </ReactInputMask>
                             </Grid>
                         </Grid>
@@ -121,59 +282,82 @@ export const WorkerForm = () => {
                         <Divider sx={{ mb: 2 }} />
                         <Grid container spacing={2} sx={{ mb: 2 }}>
                             <Grid item xs={12}>
-                                <TextField fullWidth label="Empresa" variant="filled" inputProps={{ readOnly: true }} required />
+                                <TextField fullWidth label="Empresa" value={form.company.name} variant="filled" inputProps={{ readOnly: true }} required />
                             </Grid>
                             <Grid item xs={6}>
                                 <Autocomplete
                                     fullWidth
-                                    options={top100Films}
+                                    options={roles}
                                     sx={{ display: 'inline-block' }}
-                                    renderInput={(params) => <TextField {...params} label="Função" required />}
+                                    getOptionLabel={option => option.name}
+                                    value={form.role}
+                                    onChange={(e, value) => {
+                                        setForm({
+                                            ...form,
+                                            role: value,
+                                        });
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Função" required error={!!(error?.role)} helperText={error?.role} />}
                                 />
                             </Grid>
+                            
                             <Grid item xs={6}>
                                 <Autocomplete
                                     fullWidth
-                                    options={top100Films}
+                                    options={divisions}
+                                    getOptionLabel={option => option.name}
                                     sx={{ display: 'inline-block' }}
-                                    renderInput={(params) => <TextField {...params} label="Divisão" required />}
+                                    value={form.division}
+                                    onChange={(e, value) => {
+                                        setForm({
+                                            ...form,
+                                            division: value,
+                                        });
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Divisão" required error={!!(error?.division)} helperText={error?.division} />}
                                 />
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid container>
-                    <Grid item xs={12}>
-                        <Typography variant='title'>Endereço</Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <Grid container spacing={2} sx={{ mb: 2 }}>
-                            <Grid item xs={12}>
-                                <ReactInputMask
-                                    mask="99999-999"
-                                // value={this.state.phone}
-                                // onChange={this.onChange}
-                                >
-                                    {() => <TextField fullWidth label="CEP" variant="outlined" helperText="Preencha um CEP válido para busca de dados." required />
-                                    }
-                                </ReactInputMask>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <TextField fullWidth label="Rua" inputProps={{ readOnly: true }} variant="filled" />
-                            </Grid>
-                            <Grid item xs={4}>
-                                <TextField fullWidth label="Bairro" inputProps={{ readOnly: true }} variant="filled" />
-                            </Grid>
-                            <Grid item xs={4}>
-                                <TextField fullWidth label="Cidade / UF" inputProps={{ readOnly: true }} variant="filled" />
-                            </Grid>
-                            <Grid item xs={4}>
-                                <TextField fullWidth label="Nº da Casa" variant="outlined" required />
-                            </Grid>
-                            <Grid item xs={4}>
-                                <TextField fullWidth label="Complemento" variant="outlined" />
-                            </Grid>
-                            <Grid item xs={4}>
-                                <TextField fullWidth label="Referências" variant="outlined" />
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <Typography variant='title'>Endereço</Typography>
+                            <Divider sx={{ mb: 2 }} />
+                            <Grid container spacing={2} sx={{ mb: 2 }}>
+                                <Grid item xs={12}>
+                                    <ReactInputMask
+                                        mask="99999-999"
+                                        value={form.cep}
+                                        onChange={e => {
+                                            setForm({
+                                                ...form,
+                                                cep: e.target.value,
+                                            });
+                                        }}
+                                    >
+                                        {() => <TextField fullWidth label="CEP" variant="outlined" error={!!(error?.['address.cep'])} helperText={error?.['address.cep'] ? error?.['address.cep'] : "Preencha um CEP válido para busca de dados."} required />}
+                                    </ReactInputMask>
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField fullWidth label="Rua" InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }} variant="filled" value={form.street} />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField fullWidth label="Bairro" InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }} variant="filled" value={form.district} />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField fullWidth label="Cidade / UF" InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }} variant="filled" value={form.city} />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField fullWidth label="Nº da Casa" variant="outlined" required value={form.houseNumber} onChange={e => { setForm({ ...form, houseNumber: e.target.value }) }} error={!!(error?.['address.house_number'])} helperText={error?.['address.house_number']} />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField fullWidth label="Complemento" variant="outlined" value={form.complement} onChange={e => { setForm({ ...form, complement: e.target.value }) }} />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <TextField fullWidth label="Referências" variant="outlined" value={form.references} onChange={e => { setForm({ ...form, references: e.target.value }) }} />
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -182,35 +366,30 @@ export const WorkerForm = () => {
             </Box>
             <Divider sx={{ m: 2 }} />
             <Box sx={{ justifyContent: 'right', display: 'flex' }}>
-                <Button variant="contained" color='info' startIcon={<Save />} >
+                <Button variant="contained" color='info' onClick={saveForm} startIcon={<Save />} >
                     Salvar
                 </Button>
             </Box>
-        </Card>
+        </Card >
     );
 }
 
-const marital_status = [
+const list_marital_status = [
     { label: 'Solteiro' },
     { label: 'Casado' },
     { label: 'Divorciado' },
     { label: 'Viúvo' },
 ];
 
-const gender = [
+const list_gender = [
     { label: 'Masculino' },
     { label: 'Feminino' },
 ];
 
-const scholarity = [
+const list_scholarity = [
     { label: 'Ensino Médio Incompleto' },
     { label: 'Ensino Médio Completo' },
     { label: 'Ensino Superior Incompleto' },
     { label: 'Ensino Superior Completo' },
     { label: 'Pós-graduação' },
-];
-
-
-const top100Films = [
-    { label: 'The Shawshank Redemption', year: 1994 }
 ];

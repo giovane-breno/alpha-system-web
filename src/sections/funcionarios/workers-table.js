@@ -36,6 +36,9 @@ export const WorkersTable = (props) => {
     rowsPerPage = 0,
     isLoading = true,
     isEmpty = true,
+
+    refreshState,
+    setRefreshState,
   } = props;
 
   return (
@@ -100,7 +103,7 @@ export const WorkersTable = (props) => {
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
                             <ViewModal id={data.id} data={data} />
-                            <DeleteModal id={data.id} />
+                            <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>

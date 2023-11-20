@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { addDays, subDays, subHours } from 'date-fns';
 import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography } from '@mui/material';
@@ -13,6 +13,7 @@ import { Home, NavigateNext } from '@mui/icons-material';
 import { VacationTable } from 'src/sections/rh/ferias/vacation-table';
 import { VacationFilter } from 'src/sections/rh/ferias/vacation-search';
 import { FindActiveVacation } from 'src/services/HumanResourceService';
+import { CheckExistingCompany } from 'src/services/CompaniesService';
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -32,10 +33,15 @@ const breadcrumbs = [
 ];
 
 const Page = () => {
+  useEffect(() => {
+    setCompany(CheckExistingCompany());
+  }, []);
+
+  const [company, setCompany] = useState();
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState();
   const [refreshState, setRefreshState] = useState();
-  const { data, pagination, isLoading, isEmpty } = FindActiveVacation(page, filter, refreshState);
+  const { data, pagination, isLoading, isEmpty } = FindActiveVacation(page, filter, refreshState, company);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -90,7 +96,7 @@ const Page = () => {
                 </Typography>
               </Stack>
             </Stack>
-            <VacationFilter />
+            <VacationFilter filter={filter} setFilter={setFilter}/>
             <VacationTable
               count={pagination.total_pages}
               items={data}

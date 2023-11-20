@@ -18,7 +18,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography
+  Typography,
+  setRef
 } from '@mui/material';
 import { Scrollbar } from 'src/components/scrollbar';
 import { getInitials } from 'src/utils/get-initials';
@@ -37,6 +38,9 @@ export const CompaniesTable = (props) => {
     rowsPerPage = 0,
     isLoading = true,
     isEmpty = true,
+
+    refreshState,
+    setRefreshState,
   } = props;
 
   return (
@@ -96,7 +100,7 @@ export const CompaniesTable = (props) => {
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
                             <ViewModal id={data.id} />
-                            <DeleteModal id={data.id} />
+                            <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>
@@ -129,7 +133,7 @@ export const CompaniesTable = (props) => {
         <TablePagination
           labelDisplayedRows={
             ({ from, page, count }) => {
-              return 'Mostrando ' + from + ' de ' + count + ' itens | Página ' + (page + 1)
+              return 'Mostrando ' + from + ' de ' + count + ' itens | Página ' + (page + 1) +' - ' + count
             }
           }
           rowsPerPageOptions={-1}
