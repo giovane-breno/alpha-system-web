@@ -4,6 +4,7 @@ import {
     ChevronRight,
     FilterList,
     MoreHoriz,
+    Print,
     StayPrimaryLandscape,
 } from "@mui/icons-material";
 import {
@@ -21,6 +22,7 @@ import {
     MenuItem,
     OutlinedInput,
     Select,
+    Stack,
     SvgIcon,
     Tab,
     Table,
@@ -34,17 +36,36 @@ import {
     Typography,
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Scrollbar } from "src/components/scrollbar";
 import { CheckExistingCompany } from "src/services/CompaniesService";
 import { getWorkerDemonstrative } from "src/services/FinanceService";
 import { FetchWorkers } from "src/services/WorkersService";
+import ReactToPrint, { PrintContextConsumer, useReactToPrint } from 'react-to-print';
+
 
 export const Demonstrative = ({ formDemonstrative }) => {
+    const componentRef = useRef(null);
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
     return (
-        <Grid item md={7} height={600} sx={{ pt: '0' }}>
-            <Typography variant="title">Demonstrativo Gerado</Typography>
-            <Scrollbar>
+        <Grid item md={12} height={600} sx={{ pt: '0' }} ref={componentRef}>
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                spacing={4}
+            >
+                <Typography variant="title">Demonstrativo Gerado</Typography>
+                <div>
+                    <IconButton sx={{ float: "right" }} onClick={handlePrint}>
+                        <Print />
+                    </IconButton>
+                </div>
+            </Stack>
+
+
+            <Scrollbar sx={{ mt: 2 }}>
                 <Grid container sx={{ border: 2, borderColor: "black", mb: 2, p: 2 }}>
                     <Grid item md={6}>
                         <Box>
@@ -115,7 +136,7 @@ export const Demonstrative = ({ formDemonstrative }) => {
                         <Table size="small" >
                             <TableHead>
                                 <TableRow>
-                                    
+
                                     <TableCell colSpan={2} align="center" sx={{ p: 0, border: 1, borderColor: 'black' }}>
                                         Descrição
                                     </TableCell>
@@ -218,7 +239,7 @@ export const Demonstrative = ({ formDemonstrative }) => {
                                         >R$ {formDemonstrative.total.sumDiscount}</Typography>
                                     </TableCell>
                                 </TableRow>
-                                <TableRow  key={"13"}>
+                                <TableRow key={"13"}>
                                     <TableCell colSpan={2} sx={{ pt: 0, borderLeft: 1, borderRight: 1, borderBottom: 0, borderColor: 'black' }}>
 
                                     </TableCell>

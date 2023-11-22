@@ -31,7 +31,7 @@ const breadcrumbs = [
 
 const Page = () => {
   useEffect(() => {
-    setCompany(CheckExistingCompany());
+    setCompany(CheckExistingCompany())
   }, []);
 
   const [company, setCompany] = useState();

@@ -41,6 +41,8 @@ import { useEffect, useState } from "react";
 import { Scrollbar } from "src/components/scrollbar";
 import { FetchBenefits, FetchWorkers } from "src/services/WorkersService";
 import { CheckExistingCompany } from "src/services/CompaniesService";
+import { CreateBenefit, CreateGratification, CreateIncident, CreateVacation } from "src/services/HumanResourceService";
+import { enqueueSnackbar } from "notistack";
 
 export const AssignWorker = () => {
     useEffect(() => {
@@ -82,6 +84,93 @@ export const AssignWorker = () => {
         start_date: '',
         end_date: '',
     });
+
+    let status;
+    const saveForm = async () => {
+        try {
+            switch (formHeader.option?.id) {
+
+                // { id: 1, label: "Incidente" },
+                case 1:
+                    ({ status } = await CreateIncident(formHeader, formIncident));
+                    if (status === 'success') {
+                        enqueueSnackbar('Incidente cadastrado com sucesso!', { variant: 'success', position: 'top-right' });
+                        setFormHeader({
+                            ...formHeader,
+                            worker: null,
+                            option: null,
+                        });
+
+                        setFormIncident({
+                            reason: '',
+                            discount: '',
+                            start_date: '',
+                            end_date: '',
+                        })
+                    }
+                    break;
+
+                // { id: 2, label: "Gratificação" },
+                case 2:
+                    ({ status } = await CreateGratification(formHeader, formGratification));
+                    if (status === 'success') {
+                        enqueueSnackbar('Gratificação cadastrado com sucesso!', { variant: 'success', position: 'top-right' });
+                        setFormHeader({
+                            ...formHeader,
+                            worker: null,
+                            option: null,
+                        });
+
+                        setFormGratification({
+                            reason: '',
+                            bonification: '',
+                            start_date: '',
+                            end_date: '',
+                        })
+                    }
+                    break;
+
+                // { id: 3, label: "Benefício" },
+                case 3:
+                    ({ status } = await CreateBenefit(formHeader, formBenefit));
+                    if (status === 'success') {
+                        enqueueSnackbar('Benefício cadastrado com sucesso!', { variant: 'success', position: 'top-right' });
+                        setFormHeader({
+                            ...formHeader,
+                            worker: null,
+                            option: null,
+                        });
+
+                        setFormBenefit({
+                            benefit: null,
+                        })
+                    }
+                    break;
+
+                // { id: 4, label: "Férias" },
+                case 4:
+                    ({ status } = await CreateVacation(formHeader, formVacation));
+                    if (status === 'success') {
+                        enqueueSnackbar('Férias cadastrada com sucesso!', { variant: 'success', position: 'top-right' });
+                        setFormHeader({
+                            ...formHeader,
+                            worker: null,
+                            option: null,
+                        });
+
+                        setFormVacation({
+                            start_date: '',
+                            end_date: '',
+                        })
+                    }
+                    break;
+            }
+        } catch (error) {
+            enqueueSnackbar('Verifique os erros do formulário!', { variant: 'error', position: 'top-right' });
+            const path = error.response?.data.errors;
+            setError(path);
+        }
+    }
 
     return (
         <Card>
@@ -343,11 +432,15 @@ export const AssignWorker = () => {
                                 </LocalizationProvider>
                             </Box>
 
-                            <Button variant="contained" color="warning" sx={{ maxWidth: 500, width: 500 }}>
+                            <Button variant="contained" color="warning" onClick={saveForm} sx={{ maxWidth: 500, width: 500 }}>
                                 Inserir
                             </Button>
                         </>
                     }
+
+                    <Button variant="contained" color="warning" onClick={saveForm} sx={{ maxWidth: 500, width: 500 }}>
+                        Inserir
+                    </Button>
                 </Collapse>
             </Box >
         </Card >

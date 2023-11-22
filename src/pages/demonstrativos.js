@@ -15,38 +15,6 @@ import { CompaniesSearch } from 'src/sections/empresas/companies-search';
 import { GenerateDemonstrative } from 'src/sections/demonstrativos/generate-demonstrative';
 import { Home, NavigateNext } from '@mui/icons-material';
 
-const now = new Date();
-
-// const data = [
-//   {
-//     id: '848',
-//     name: 'Empresa Ficticia LTDA',
-//     corporate_name: 'Ficticia',
-//     created_at: subDays(subHours(now, 7), 1).getTime(),
-//     CNPJ: '12.345.678/9101-12',
-//     town_registration: 'SP',
-//     state_registration: 'SJC',
-//   },
-//   {
-//     id: '1',
-//     name: 'Empresa Ficticia LTDA',
-//     corporate_name: 'Ficticia',
-//     created_at: subDays(subHours(now, 7), 1).getTime(),
-//     CNPJ: '12.345.678/9101-12',
-//     town_registration: 'SP',
-//     state_registration: 'SJC',
-//   },
-//   {
-//     id: '2',
-//     name: 'Empresa Ficticia LTDA',
-//     corporate_name: 'Ficticia',
-//     created_at: subDays(subHours(now, 7), 1).getTime(),
-//     CNPJ: '12.345.678/9101-12',
-//     town_registration: 'SP',
-//     state_registration: 'SJC',
-//   }
-// ];
-
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
     <Home/>

@@ -34,6 +34,7 @@
     "react-apexcharts": "1.4.0",
     "react-dom": "18.2.0",
     "react-input-mask": "^2.0.4",
+    "react-to-print": "^2.14.15",
     "simplebar-react": "^3.2.1",
     "yup": "1.0.0"
   },

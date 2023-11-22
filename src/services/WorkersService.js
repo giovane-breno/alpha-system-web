@@ -22,11 +22,11 @@ export const FetchWorkers = (company) => {
     return { data, isLoading, isEmpty };
 }
 
-export const FetchRoles = (company) => {
+export const FetchRoles = () => {
     const [data, setData] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [isEmpty, setEmpty] = useState(true);
-    const url = `l/roles?company=${company?.id}`;
+    const url = `l/roles`;
 
     useEffect(() => {
         api.get(url).then((response) => {
@@ -40,11 +40,11 @@ export const FetchRoles = (company) => {
     return { data, isLoading, isEmpty };
 }
 
-export const FetchDivisions = (company) => {
+export const FetchDivisions = () => {
     const [data, setData] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [isEmpty, setEmpty] = useState(true);
-    const url = `l/divisions?company=${company?.id}`;
+    const url = `l/divisions`;
 
     useEffect(() => {
         api.get(url).then((response) => {
@@ -58,11 +58,11 @@ export const FetchDivisions = (company) => {
     return { data, isLoading, isEmpty };
 }
 
-export const FetchBenefits = (company) => {
+export const FetchBenefits = () => {
     const [data, setData] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [isEmpty, setEmpty] = useState(true);
-    const url = `l/benefits?company=${company?.id}`;
+    const url = `l/benefits`;
 
     useEffect(() => {
         api.get(url).then((response) => {
@@ -138,9 +138,9 @@ export const CreateWorker = async (form) => {
             cpf: form.cpf,
             ctps: form.ctps,
             pis: form.pis,
-            company_id: form.company.id,
-            role_id: form.role.id,
-            division_id: form.division.id,
+            company_id: form.company?.id,
+            role_id: form.role?.id,
+            division_id: form.division?.id,
             address: {
                 cep: form.cep, street: form.street, district: form.district, city: form.city,
                 house_number: form.houseNumber, complement: form.complement, references: form.references

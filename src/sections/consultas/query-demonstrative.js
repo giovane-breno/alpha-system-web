@@ -2,6 +2,7 @@ import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import {
     ArrowRight,
     ChevronRight,
+    ErrorOutline,
     FilterList,
     MoreHoriz,
     StayPrimaryLandscape,
@@ -49,10 +50,11 @@ export const QueryDemonstrative = () => {
         });
     }, []);
 
-    const [demonstratives, setDemonstratives] = useState({});
+    const [demonstratives, setDemonstratives] = useState(null);
     const [formHeader, setFormHeader] = useState({
         company: null,
         worker: null,
+        month: null,
         option: null,
     });
 
@@ -132,35 +134,32 @@ export const QueryDemonstrative = () => {
 
     const getDemonstrative = async () => {
         try {
-            const { data, status } = await getWorkerDemonstrative(formHeader.worker?.id);
+            const { data, status } = await getWorkerDemonstrative(formHeader.worker?.id, formHeader.month?.id);
             if (status === 'success') {
-                setDemonstratives(data);
-                enqueueSnackbar(`Demonstrativo de ${formHeader.worker.full_name} encontrados com sucesso!`, { variant: 'success', position: 'top-right' });
+                if (data[0]) {
+                    setDemonstratives(data);
+                    setTab("1");
+                    enqueueSnackbar(`Demonstrativo de ${formHeader.worker.full_name} encontrados com sucesso!`, { variant: 'success', position: 'top-right' });
+                    setFormHeader({
+                        ...formHeader,
+                        worker: null,
+                        month: null
+                    })
 
-                // if (formHeader.worker?.id) {
-                // } else {
-                //     enqueueSnackbar('Demonstrativos gerados com sucesso!', { variant: 'success', position: 'top-right' });
+                    setFormDemonstrative({
+                        ...formDemonstrative,
+                        competence: '',
+                    });
 
-                //     data?.generated > 0 &&
-                //         enqueueSnackbar(`${data?.generated} holerites foram gerados!`, { variant: 'info', position: 'top-right' });
+                } else {
+                    enqueueSnackbar(`Não foram encontrados Demonstrativos da competência selecionada.`, { variant: 'error', position: 'top-right' });
+                }
 
-                //     data?.not_generated > 0 &&
-                //         enqueueSnackbar(`${data?.not_generated} holerites não foram gerados!`, { variant: 'warning', position: 'top-right' });
-
-                // }
-
-                setFormHeader({
-                    ...formHeader,
-                    worker: null,
-                })
 
             }
         } catch (error) {
-            // if (formHeader.worker?.id) {
-            //     enqueueSnackbar(`O funcionário selecionado já possui o holerite desse mês.`, { variant: 'error', position: 'top-right' });
-            // } else {
-            //     enqueueSnackbar('Houve um erro ao gerar holerites.', { variant: 'error', position: 'top-right' });
-            // }
+            enqueueSnackbar("Houve um erro ao buscar o demonstrativo.", { variant: 'error', position: 'top-right' });
+
         }
     };
 
@@ -175,7 +174,7 @@ export const QueryDemonstrative = () => {
                     aria-label="secondary tabs example"
                 >
                     <Tab value="0" label="Consultar" />
-                    <Tab value="1" label="Demonstrativos Encontrados" />
+                    <Tab value="1" label="Demonstrativos Encontrados" disabled={!!(!demonstratives)} />
                 </Tabs>
             </Box>
             {tab === "0" && (
@@ -215,11 +214,12 @@ export const QueryDemonstrative = () => {
                                 fullWidth
                                 options={months}
                                 sx={{ maxWidth: 500, display: "inline-block" }}
-                                value={formHeader.option}
+                                getOptionLabel={option => option.label}
+                                value={formHeader.month}
                                 onChange={(e, value) => {
                                     setFormHeader({
                                         ...formHeader,
-                                        option: value,
+                                        month: value,
                                     });
                                 }}
                                 renderInput={(params) => (
@@ -255,26 +255,36 @@ export const QueryDemonstrative = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody sx={{ borderRight: "primary.dark" }}>
-                                            {demonstratives.map((data) => {
-                                                return (
-                                                    <TableRow hover key={data.id}>
-                                                        <TableCell>
-                                                            <Typography
-                                                                variant="subtitle3"
-                                                                sx={{ fontWeight: "bold", color: "secondary.main" }}
-                                                            >
-                                                                #{data.id}
-                                                            </Typography>
-                                                        </TableCell>
-                                                        <TableCell>{data.competence}</TableCell>
-                                                        <TableCell>
-                                                            <IconButton onClick={handleDemonstrative(data.company, data.company_address, data.competence, data.worker, data.data, data.total)}>
-                                                                <ChevronRight />
-                                                            </IconButton>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
+                                            {demonstratives[0] ?
+
+                                                demonstratives.map((data) => {
+                                                    return (
+                                                        <TableRow hover key={data.id}>
+                                                            <TableCell>
+                                                                <Typography
+                                                                    variant="subtitle3"
+                                                                    sx={{ fontWeight: "bold", color: "secondary.main" }}
+                                                                >
+                                                                    #{data.id}
+                                                                </Typography>
+                                                            </TableCell>
+                                                            <TableCell>{data.competence}</TableCell>
+                                                            <TableCell>
+                                                                <IconButton onClick={handleDemonstrative(data.company, data.company_address, data.competence, data.worker, data.data, data.total)}>
+                                                                    <ChevronRight />
+                                                                </IconButton>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })
+                                                :
+                                                <TableCell colSpan={3}>
+                                                    <Box sx={{ justifyContent: 'center' }}>
+                                                        <Typography variant='subtitle'><ErrorOutline sx={{ verticalAlign: 'bottom' }} /> Não há dados nessa tabela.</Typography>
+                                                    </Box>
+                                                </TableCell>
+                                            }
+
                                         </TableBody>
                                     </Table>
                                 </Box>
@@ -296,7 +306,18 @@ export const QueryDemonstrative = () => {
                         // onRowsPerPageChange={onRowsPerPageChange}
                         /> */}
                     </Grid>
-                    <Demonstrative formDemonstrative={formDemonstrative} />
+                    <Grid item md={7} borderRight={1} borderColor={'#F2F4F7'} sx={{ mt: 'auto', mb: 'auto' }}>
+                        {formDemonstrative.competence ?
+                            <Demonstrative formDemonstrative={formDemonstrative} />
+                            :
+                            <>
+                                <Box sx={{ justifyContent: 'center', textAlign: 'center' }}>
+                                    <Typography variant='subtitle'><ErrorOutline sx={{ verticalAlign: 'bottom' }} /> Clique em visualizar para acessar um demonstrativo.</Typography>
+
+                                </Box>
+                            </>
+                        }
+                    </Grid>
                 </Grid>
             )
             }
@@ -305,16 +326,16 @@ export const QueryDemonstrative = () => {
 };
 
 const months = [
-    { label: "Janeiro" },
-    { label: "Fevereiro" },
-    { label: "Março" },
-    { label: "Abril" },
-    { label: "Maio" },
-    { label: "Junho" },
-    { label: "Julho" },
-    { label: "Agosto" },
-    { label: "Setembro" },
-    { label: "Outubro" },
-    { label: "Novembro" },
-    { label: "Dezembro" },
+    { id: 1, label: "Janeiro" },
+    { id: 2, label: "Fevereiro" },
+    { id: 3, label: "Março" },
+    { id: 4, label: "Abril" },
+    { id: 5, label: "Maio" },
+    { id: 6, label: "Junho" },
+    { id: 7, label: "Julho" },
+    { id: 8, label: "Agosto" },
+    { id: 9, label: "Setembro" },
+    { id: 10, label: "Outubro" },
+    { id: 11, label: "Novembro" },
+    { id: 12, label: "Dezembro" },
 ];

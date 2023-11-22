@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { subDays, subHours } from 'date-fns';
-import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography, setRef } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { applyPagination } from 'src/utils/apply-pagination';
@@ -31,15 +31,10 @@ const breadcrumbs = [
 ];
 
 const Page = () => {
-  useEffect(() => {
-    setCompany(CheckExistingCompany());
-  }, []);
-
-  const [company, setCompany] = useState();
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState();
   const [refreshState, setRefreshState] = useState();
-  const { data, pagination, isLoading, isEmpty } = FindActiveDivision(page, filter, refreshState, company);
+  const { data, pagination, isLoading, isEmpty } = FindActiveDivision(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -93,7 +88,7 @@ const Page = () => {
                 </Typography>
               </Stack>
               <div>
-                <CreateModal />
+                <CreateModal refreshState={refreshState} setRefreshState={setRefreshState}/>
               </div>
             </Stack>
             <DivisoesSearch filter={filter} setFilter={setFilter}/>

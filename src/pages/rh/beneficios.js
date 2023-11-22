@@ -32,7 +32,7 @@ const breadcrumbs = [
 
 const Page = () => {
   useEffect(() => {
-    setCompany(CheckExistingCompany());
+    setCompany(CheckExistingCompany())
   }, []);
 
   const [company, setCompany] = useState();
@@ -93,7 +93,7 @@ const Page = () => {
                 </Typography>
               </Stack>
             </Stack>
-            <BenefitsSearch filter={filter} setFilter={setFilter}/>
+            <BenefitsSearch filter={filter} setFilter={setFilter} />
             <BenefitsTable
               count={pagination.total_pages}
               items={data}
@@ -103,7 +103,7 @@ const Page = () => {
               rowsPerPage={pagination.per_page}
               isLoading={isLoading}
               isEmpty={isEmpty}
-              
+
             />
           </Stack>
         </Container>

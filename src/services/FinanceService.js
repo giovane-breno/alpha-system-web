@@ -12,7 +12,12 @@ export const doWorkersPayment = async (id = null) => {
 }
 
 export const getWorkerDemonstrative = async (id, month = null) => {
-    var url = `/finance/payment/${id}?month=${month}`;
+    let url = `/finance/payment/${id}`;
+    
+    if (month !== null) {
+        url += `?month=${month}`;
+    }
+
     const request = await api.get(url)
     return { data: request.data.data.info, status: request.data.status };
 }

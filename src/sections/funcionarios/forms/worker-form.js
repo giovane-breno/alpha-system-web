@@ -8,7 +8,7 @@ import { enqueueSnackbar } from 'notistack';
 
 import { useEffect, useState } from 'react';
 import ReactInputMask from 'react-input-mask';
-import { QueryCEP } from 'src/services/CompaniesService';
+import { CheckExistingCompany, QueryCEP } from 'src/services/CompaniesService';
 import { CreateWorker, FetchDivisions, FetchRoles } from 'src/services/WorkersService';
 
 
@@ -42,17 +42,12 @@ export const WorkerForm = () => {
         references: '',
     });
 
-    const CheckExistingCompany = () => {
-        let company = localStorage.getItem(('company-data'));
-        setForm({
-            ...form,
-            company: JSON.parse(company),
-        });
-    }
-
     useEffect(() => {
-        CheckExistingCompany();
-    }, []);
+        setForm({
+          ...form,
+          company: CheckExistingCompany(),
+        });
+      }, []);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
@@ -124,8 +119,9 @@ export const WorkerForm = () => {
 
             }
         } catch (error) {
+            console.log(error);
             enqueueSnackbar('Verifique os erros do formulário!', { variant: 'error', position: 'top-right' });
-            const path = error.response.data.errors;
+            const path = error.response?.data.errors;
             setError(path);
         }
 

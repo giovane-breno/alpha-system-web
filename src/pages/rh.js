@@ -13,7 +13,9 @@ import {
   Unstable_Grid2 as Grid,
   Divider,
   Breadcrumbs,
-  Link
+  Link,
+  Tooltip,
+  IconButton
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CompanyCard } from 'src/sections/empresas/companies-table';
@@ -21,7 +23,7 @@ import { CompaniesSearch } from 'src/sections/empresas/companies-search';
 import { RhCard } from 'src/sections/rh/rh-card';
 import { RhSearch } from 'src/sections/rh/rh-search';
 import { RhTable } from 'src/sections/rh/rh-table';
-import { AccountBalance, BeachAccess, CardGiftcard, Home, LibraryAdd, ManageAccounts, NavigateNext, People, Person, PlusOne, Report } from '@mui/icons-material';
+import { AccountBalance, BeachAccess, CardGiftcard, Home, Info, LibraryAdd, ManageAccounts, NavigateNext, People, Person, PlusOne, Report } from '@mui/icons-material';
 
 // Beneficios
 // Divisões
@@ -152,6 +154,11 @@ const Page = () => (
           <Divider />
           <Typography variant="title">
             Gestão de Dados
+            <Tooltip sx={{verticalAlign: 'sub'}} title="Os dados são compartilhados entre empresas.">
+              <IconButton>
+                <Info />
+              </IconButton>
+            </Tooltip>
           </Typography>
           <Grid container spacing={2}>
             {data.slice(0, 4).map((rh) => {

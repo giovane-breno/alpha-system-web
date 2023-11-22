@@ -95,7 +95,7 @@ const Page = () => {
                 </Typography>
               </Stack>
             </Stack>
-            <IncidentFilter filter={filter} setFilter={setFilter}/>
+            <IncidentFilter filter={filter} setFilter={setFilter} />
             <IncidentTable
               count={pagination.total_pages}
               items={data}

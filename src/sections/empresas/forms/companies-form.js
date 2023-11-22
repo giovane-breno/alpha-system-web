@@ -92,7 +92,7 @@ export const CompaniesForm = () => {
             }
         } catch (error) {
             enqueueSnackbar('Verifique os erros do formulário!', { variant: 'error', position: 'top-right' });
-            const path = error.response.data.errors;
+            const path = error.response?.data.errors;
             setError(path);
         }
     }

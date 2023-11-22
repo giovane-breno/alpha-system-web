@@ -1,23 +1,14 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Autocomplete, Divider, Grid, IconButton, InputAdornment, Menu, MenuItem, SvgIcon, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField } from '@mui/material';
+import { Autocomplete, Divider, Grid, IconButton, InputAdornment, Menu, MenuItem, SvgIcon, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField, setRef } from '@mui/material';
 import { Close, Delete, Done, Edit, ExpandLess, ExpandMore, Info, MoreVert, Visibility } from '@mui/icons-material';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-
-const large = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '70%', // Largura padrão
-    bgcolor: 'background.paper',
-    borderRadius: '.3rem',
-    boxShadow: 24,
-};
+import { CreateBenefitType } from 'src/services/HumanResourceService';
+import { enqueueSnackbar } from 'notistack';
+import { useState } from 'react';
 
 const small = {
     position: 'absolute',
@@ -30,16 +21,41 @@ const small = {
     boxShadow: 24,
 };
 
-export const CreateModal = () => {
-    const [open, setOpen] = React.useState(false);
+export const CreateModal = ({ refreshState, setRefreshState }) => {
+    const [open, setOpen] = useState(false);
+    const [error, setError] = useState();
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const [value, setValue] = React.useState('0');
+    const [form, setForm] = useState({
+        name: '',
+        bonus: '',
+    });
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+    const saveForm = async () => {
+        try {
+            const { status } = await CreateBenefitType(form);
+            if (status === 'success') {
+                enqueueSnackbar('Tipo de benefício cadastrado com sucesso!', { variant: 'success', position: 'top-right' });
+
+                setError("");
+                setForm({
+                    name: '',
+                    bonus: '',
+                });
+
+                setRefreshState(!refreshState);
+
+                handleClose();
+
+            }
+        } catch (error) {
+            enqueueSnackbar('Verifique os erros do formulário!', { variant: 'error', position: 'top-right' });
+            const path = error.response?.data.errors;
+            setError(path);
+        }
+
+    }
 
     return (
         <div>
@@ -77,16 +93,16 @@ export const CreateModal = () => {
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <TextField fullWidth label="Nome" variant="outlined" required />
+                                <TextField fullWidth label="Nome" type="text" variant="outlined" required value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }) }} error={!!(error?.name)} helperText={error?.name} />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField fullWidth label="Bonus" variant="outlined" required />
+                                <TextField fullWidth label="Bonus" type="number" variant="outlined" required value={form.bonus} onChange={e => { setForm({ ...form, bonus: e.target.value }) }} error={!!(error?.bonus)} helperText={error?.bonus} />
                             </Grid>
                         </Grid>
                     </Box>
                     <Divider />
                     <Box sx={{ p: 2, justifyContent: 'right', display: 'flex' }}>
-                        <IconButton onClick={handleOpen}
+                        <IconButton onClick={saveForm}
                             sx={{
                                 backgroundColor: 'success.main',
                                 color: "#fff",

@@ -190,7 +190,7 @@ export const DeleteModal = ({ id, refreshState, setRefreshState }) => {
             }
         } catch (error) {
             enqueueSnackbar('Verifique os erros!', { variant: 'error', position: 'top-right' });
-            const path = error.response.data.errors;
+            const path = error.response?.data.errors;
             setError(path);
         }
     }

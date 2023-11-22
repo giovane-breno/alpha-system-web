@@ -6,7 +6,7 @@ const api = axios.create({
 //   baseURL: 'https://api.cervet.com.br/api/',
   baseURL: 'http://localhost:8000/api/',
   headers: {
-    Authorization: `Bearer qGSxng6ZWV2P94n82ytb18H9jeQAPWHSbZ3YZEre53f15b72`,
+    Authorization: `Bearer 6bVks4c2hXDcvCNOTQj7usV1iEamIPPFdGRp0wqo535a35be`,
     Accept: 'application/json'
   },
 });

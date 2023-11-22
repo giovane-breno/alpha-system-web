@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { subDays, subHours } from 'date-fns';
-import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography, setRef } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { applyPagination } from 'src/utils/apply-pagination';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import { CreateModal } from 'src/sections/rh/beneficios/modal/benefits-create-modal';
+import { CreateModal } from 'src/sections/rh/tipo_beneficios/modal/benefits-create-modal';
 import { BenefitsTable } from 'src/sections/rh/tipo_beneficios/benefits-table';
 import { BenefitsSearch } from 'src/sections/rh/tipo_beneficios/benefits-search';
 import { Home, NavigateNext } from '@mui/icons-material';
@@ -31,15 +31,10 @@ const breadcrumbs = [
 ];
 
 const Page = () => {
-  useEffect(() => {
-    setCompany(CheckExistingCompany());
-  }, []);
-
-  const [company, setCompany] = useState();
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState();
   const [refreshState, setRefreshState] = useState();
-  const { data, pagination, isLoading, isEmpty } = FindActiveBenefitType(page, filter, refreshState, company);
+  const { data, pagination, isLoading, isEmpty } = FindActiveBenefitType(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -93,10 +88,10 @@ const Page = () => {
                 </Typography>
               </Stack>
               <div>
-                <CreateModal />
+                <CreateModal refreshState={refreshState} setRefreshState={setRefreshState} />
               </div>
             </Stack>
-            <BenefitsSearch filter={filter} setFilter={setFilter}/>
+            <BenefitsSearch filter={filter} setFilter={setFilter} />
             <BenefitsTable
               count={pagination.total_pages}
               items={data}

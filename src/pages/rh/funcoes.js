@@ -31,15 +31,11 @@ const breadcrumbs = [
 ];
 
 const Page = () => {
-  useEffect(() => {
-    setCompany(CheckExistingCompany());
-  }, []);
-
   const [company, setCompany] = useState();
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState();
   const [refreshState, setRefreshState] = useState();
-  const { data, pagination, isLoading, isEmpty } = FindActiveRole(page, filter, refreshState, company);
+  const { data, pagination, isLoading, isEmpty } = FindActiveRole(page, filter, refreshState);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -93,10 +89,10 @@ const Page = () => {
                 </Typography>
               </Stack>
               <div>
-                <CreateModal />
+                <CreateModal refreshState={refreshState} setRefreshState={setRefreshState} />
               </div>
             </Stack>
-            <RolesSearch filter={filter} setFilter={setFilter}/>
+            <RolesSearch filter={filter} setFilter={setFilter} />
             <RolesTable
               count={pagination.total_pages}
               items={data}
