@@ -105,9 +105,13 @@ const breadcrumbs = [
   </Typography>,
 ];
 
-const adminData = localStorage.getItem('admin-data');
-const parsedData = adminData ? JSON.parse(adminData) : null;
-const abilities = parsedData?.abilities || '';
+let abilities;
+
+if (typeof window !== 'undefined') {
+  const adminData = localStorage.getItem('admin-data');
+  const parsedData = adminData ? JSON.parse(adminData) : null;
+ abilities = parsedData?.abilities || '';
+}
 
 const Page = () => (
   <>

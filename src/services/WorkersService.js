@@ -22,6 +22,11 @@ export const FetchWorkers = (company) => {
     return { data, isLoading, isEmpty };
 }
 
+export const FindWorker = async (id) => {
+    const request = await api.get(`user/${id}`);
+    return { data: request.data.data, status: request.data.status };
+};
+
 export const FetchRoles = () => {
     const [data, setData] = useState([]);
     const [isLoading, setLoading] = useState(true);
@@ -151,6 +156,33 @@ export const CreateWorker = async (form) => {
 
 
 
+        });
+
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const UpdateWorker = async (id, form) => {
+    const request = await api
+        .put(`/user/${id}`, {
+            name: form.name,
+            email: form.email,
+            gender: form.gender,
+            born_at: form.born_at,
+            marital_status: form.marital,
+            education_level: form.scholarity,
+            cpf: form.cpf,
+            ctps: form.ctps,
+            pis: form.pis,
+            company_id: form.company?.id,
+            role_id: form.role?.id,
+            division_id: form.division?.id,
+            address: {
+                cep: form.cep, street: form.street, district: form.district, city: form.city,
+                house_number: form.house_number, complement: form.complement, references: form.references
+            },
+            phones: {
+                phone_number: form.phone
+            }
         });
 
     return { data: request.data.data, status: request.data.status };

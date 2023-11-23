@@ -59,6 +59,11 @@ export const QueryCEP = async (cep) => {
     return { data: request.data };
 };
 
+export const FindCompany = async (id) => {
+    const request = await api.get(`company/${id}`);
+    return { data: request.data.data, status: request.data.status };
+};
+
 export const CreateCompany = async (form) => {
     const request = await api
         .post("/company", {
@@ -74,6 +79,24 @@ export const CreateCompany = async (form) => {
         });
     return { data: request.data.data, status: request.data.status };
 };
+
+export const UpdateCompany = async (id, form) => {
+    const request = await api
+        .put(`/company/${id}`, {
+            name: form.name,
+            corporate_name: form.corporate_name,
+            CNPJ: form.CNPJ,
+            town_registration: form.town_registration,
+            state_registration: form.state_registration,
+            address: {
+                cep: form.cep, street: form.street, district: form.district, city: form.city,
+                house_number: form.house_number, complement: form.complement, references: form.references
+            },
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+
 
 export const DeleteCompany = async (id) => {
     const request = await api.delete(`company/${id}`);

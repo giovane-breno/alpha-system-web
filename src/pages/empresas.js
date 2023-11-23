@@ -30,10 +30,14 @@ const Page = () => {
   const [refreshState, setRefreshState] = useState();
   const { data, pagination, isLoading, isEmpty } = FindActiveCompanies(page, filter, refreshState);
 
-  const adminData = localStorage.getItem('admin-data');
-  const parsedData = adminData ? JSON.parse(adminData) : null;
-  const abilities = parsedData?.abilities || '';
+  let abilities;
 
+  if (typeof window !== 'undefined') {
+    const adminData = localStorage.getItem('admin-data');
+    const parsedData = adminData ? JSON.parse(adminData) : null;
+   abilities = parsedData?.abilities || '';
+  }
+  
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);

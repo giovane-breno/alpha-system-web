@@ -100,8 +100,8 @@ export const CompaniesTable = (props) => {
                         </TableCell>
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
-                            <ViewModal id={data.id} />
-                            { abilities.includes('deleteCompany') &&
+                            <ViewModal id={data.id} data={data} refreshState={refreshState} setRefreshState={setRefreshState} />
+                            {abilities.includes('deleteCompany') &&
 
                               <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                             }

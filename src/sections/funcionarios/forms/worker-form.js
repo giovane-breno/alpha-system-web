@@ -89,7 +89,7 @@ export const WorkerForm = () => {
         try {
             const { status } = await CreateWorker(form);
             if (status === 'success') {
-                enqueueSnackbar('Empresa cadastrada com sucesso!', { variant: 'success', position: 'top-right' });
+                enqueueSnackbar('Funcionário cadastrado com sucesso!', { variant: 'success', position: 'top-right' });
 
                 setError("");
                 setForm({

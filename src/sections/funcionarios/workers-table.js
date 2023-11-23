@@ -103,7 +103,8 @@ export const WorkersTable = (props) => {
                         </TableCell>
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
-                            <ViewModal id={data.id} data={data} />
+                            <ViewModal id={data.id} data={data} refreshState={refreshState}
+                              setRefreshState={setRefreshState} />
                             {abilities.includes('deleteUser') &&
                               <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                             }
