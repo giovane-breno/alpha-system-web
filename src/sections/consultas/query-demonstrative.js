@@ -42,7 +42,7 @@ import { getWorkerDemonstrative } from "src/services/FinanceService";
 import { FetchWorkers } from "src/services/WorkersService";
 import { Demonstrative } from "./demonstrative";
 
-export const QueryDemonstrative = () => {
+export const QueryDemonstrative = ({ userData, abilities }) => {
     useEffect(() => {
         setFormHeader({
             ...formHeader,
@@ -134,12 +134,21 @@ export const QueryDemonstrative = () => {
 
     const getDemonstrative = async () => {
         try {
-            const { data, status } = await getWorkerDemonstrative(formHeader.worker?.id, formHeader.month?.id);
+            let data;
+            let status;
+            if (abilities === '') {
+                ({ data, status } = await getWorkerDemonstrative(userData.id, formHeader.month?.id));
+
+            } else {
+                ({ data, status } = await getWorkerDemonstrative(formHeader.worker?.id, formHeader.month?.id));
+            }
             if (status === 'success') {
                 if (data[0]) {
                     setDemonstratives(data);
                     setTab("1");
-                    enqueueSnackbar(`Demonstrativo de ${formHeader.worker.full_name} encontrados com sucesso!`, { variant: 'success', position: 'top-right' });
+
+                    enqueueSnackbar(`Demonstrativo encontrado com sucesso!`, { variant: 'success', position: 'top-right' });
+
                     setFormHeader({
                         ...formHeader,
                         worker: null,
@@ -192,23 +201,33 @@ export const QueryDemonstrative = () => {
                     </Box>
                     {formHeader.company && formHeader.company.id > 0 &&
                         <Box sx={{ pb: 3 }}>
-                            <Autocomplete
-                                fullWidth
-                                options={workersArray}
-                                getOptionLabel={option => option.full_name}
-                                value={formHeader.worker}
-                                onChange={(e, value) => {
-                                    setFormHeader({
-                                        ...formHeader,
-                                        worker: value,
-                                    });
-                                }}
-                                sx={{ maxWidth: 500, display: "inline-block" }}
-                                renderInput={(params) => <TextField {...params} label="Funcionário *" />}
-                            />
+                            {abilities === '' ?
+                                <>
+                                    <TextField fullWidth InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} sx={{ maxWidth: 500, display: "inline-block" }}
+                                        id="outlined-basic" label="Funcionário *" variant="filled"
+                                        value={userData.name}
+                                    />
+                                </>
+                                :
+                                <Autocomplete
+                                    fullWidth
+                                    options={workersArray}
+                                    getOptionLabel={option => option.full_name}
+                                    value={formHeader.worker}
+                                    onChange={(e, value) => {
+                                        setFormHeader({
+                                            ...formHeader,
+                                            worker: value,
+                                        });
+                                    }}
+                                    sx={{ maxWidth: 500, display: "inline-block" }}
+                                    renderInput={(params) => <TextField {...params} label="Funcionário *" />}
+                                />
+                            }
+
                         </Box>
                     }
-                    <Collapse in={!!formHeader.worker}>
+                    <Collapse in={!!formHeader.worker || abilities === ''}>
                         <Box sx={{ pb: 4 }}>
                             <Autocomplete
                                 fullWidth
@@ -233,7 +252,8 @@ export const QueryDemonstrative = () => {
                         </Box>
                     </Collapse>
                     <Box>
-                        <Button variant="contained" onClick={getDemonstrative} color="warning" disabled={(!!(!formHeader.company) || !!(!formHeader.worker))} sx={{ maxWidth: 500, width: 500 }}>
+                        <Button variant="contained" onClick={getDemonstrative} color="warning" disabled={(!formHeader.company || !formHeader.worker) && abilities !== ''}
+                            sx={{ maxWidth: 500, width: 500 }}>
                             Consultar
                         </Button>
                     </Box>

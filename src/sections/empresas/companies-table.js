@@ -30,6 +30,7 @@ import { ErrorOutline, Label } from '@mui/icons-material';
 
 export const CompaniesTable = (props) => {
   const {
+    abilities,
     count = 0,
     items = [],
     onPageChange = () => { },
@@ -100,7 +101,10 @@ export const CompaniesTable = (props) => {
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
                             <ViewModal id={data.id} />
-                            <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
+                            { abilities.includes('deleteCompany') &&
+
+                              <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
+                            }
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>
@@ -133,7 +137,7 @@ export const CompaniesTable = (props) => {
         <TablePagination
           labelDisplayedRows={
             ({ from, page, count }) => {
-              return 'Mostrando ' + from + ' de ' + count + ' itens | Página ' + (page + 1) +' - ' + count
+              return 'Mostrando ' + from + ' de ' + count + ' itens | Página ' + (page + 1) + ' - ' + count
             }
           }
           rowsPerPageOptions={-1}

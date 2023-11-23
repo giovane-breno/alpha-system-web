@@ -34,6 +34,15 @@ const Page = () => {
   const [refreshState, setRefreshState] = useState(true);
   const { data, pagination, isLoading, isEmpty } = FindActiveWorkers(page, filter, refreshState, company);
 
+  let abilities;
+
+
+  if (typeof window !== 'undefined') {
+    const adminData = localStorage.getItem('admin-data');
+    const parsedData = adminData ? JSON.parse(adminData) : null;
+    abilities = parsedData?.abilities || '';
+  }
+
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
@@ -85,25 +94,27 @@ const Page = () => {
                   Tabela contendo todos os Funcionários cadastrados.
                 </Typography>
               </Stack>
-              <div>
-                <Link href={"/funcionarios/cadastrar"}>
-
-                  <Button
-                    color='success'
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <PlusIcon />
-                      </SvgIcon>
-                    )}
-                    variant="contained"
-                  >
-                    Cadastrar Funcionário
-                  </Button>
-                </Link>
-              </div>
+              {abilities.includes('createUser') &&
+                <div>
+                  <Link href={"/funcionarios/cadastrar"}>
+                    <Button
+                      color='success'
+                      startIcon={(
+                        <SvgIcon fontSize="small">
+                          <PlusIcon />
+                        </SvgIcon>
+                      )}
+                      variant="contained"
+                    >
+                      Cadastrar Funcionário
+                    </Button>
+                  </Link>
+                </div>
+              }
             </Stack>
-            <WorkersSearch filter={filter} setFilter={setFilter}/>
+            <WorkersSearch filter={filter} setFilter={setFilter} />
             <WorkersTable
+              abilities={abilities}
               count={pagination.total_pages}
               items={data}
               onPageChange={handlePageChange}

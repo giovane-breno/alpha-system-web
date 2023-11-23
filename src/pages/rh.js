@@ -56,34 +56,42 @@ const data = [
     description: 'Cadastro e Consulta de Benefícios',
     icon: <AccountBalance color='success' sx={{ height: 100, width: 80 }} />,
   },
+  // MUDA AQUI
   {
     url: 'rh/atribuir',
     title: 'Atribuir',
+    permission: 'createVacation',
     description: 'Atribuição de Férias, Benefícios, Gratificações ou Incidentes',
     icon: <LibraryAdd color='success' sx={{ height: 100, width: 80 }} />,
   },
+
+
   {
     url: 'rh/ferias',
     title: 'Férias',
     description: 'Consulta de Férias',
+    permission: '',
     icon: <BeachAccess color='info' sx={{ height: 100, width: 80 }} />,
   },
   {
     url: 'rh/gratificacoes',
     title: 'Gratificações',
     description: 'Consulta de Gratificações',
+    permission: '',
     icon: <CardGiftcard color='info' sx={{ height: 100, width: 80 }} />,
   },
   {
     url: 'rh/incidentes',
     title: 'Incidentes',
     description: 'Consulta de Incidentes',
+    permission: '',
     icon: <Report color='info' sx={{ height: 100, width: 80 }} />,
   },
   {
     url: 'rh/beneficios',
     title: 'Benefícios',
     description: 'Consulta de Benefícios',
+    permission: '',
     icon: <AccountBalance color='info' sx={{ height: 100, width: 80 }} />,
   },
 ];
@@ -96,6 +104,10 @@ const breadcrumbs = [
     Recursos Humanos
   </Typography>,
 ];
+
+const adminData = localStorage.getItem('admin-data');
+const parsedData = adminData ? JSON.parse(adminData) : null;
+const abilities = parsedData?.abilities || '';
 
 const Page = () => (
   <>
@@ -141,6 +153,8 @@ const Page = () => (
           <Grid container spacing={2}>
             {data.slice(4, 9).map((rh) => {
               return (
+                (abilities.includes(rh.permission) || (rh.permission === '')) &&
+
                 <Grid item xs={3}>
                   <RhCard title={rh.title}
                     description={rh.description}
@@ -154,7 +168,7 @@ const Page = () => (
           <Divider />
           <Typography variant="title">
             Gestão de Dados
-            <Tooltip sx={{verticalAlign: 'sub'}} title="Os dados são compartilhados entre empresas.">
+            <Tooltip sx={{ verticalAlign: 'sub' }} title="Os dados são compartilhados entre empresas.">
               <IconButton>
                 <Info />
               </IconButton>

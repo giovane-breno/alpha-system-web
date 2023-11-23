@@ -49,13 +49,22 @@ const now = new Date();
 
 const breadcrumbs = [
   <Link underline="hover" key="1" color="inherit" href="/">
-    <Home/>
+    <Home />
   </Link>,
   <Typography key="3" color="text.primary">
     Consultas
   </Typography>,
 ];
 
+let userData;
+let abilities;
+
+if (typeof window !== 'undefined') {
+  const adminData = JSON.parse(localStorage.getItem('admin-data'));
+  userData = JSON.parse(localStorage.getItem('user-data'));
+  const parsedData = adminData ? adminData : null;
+  abilities = parsedData?.abilities || '';
+}
 const Page = () => {
   return (
     <>
@@ -95,7 +104,7 @@ const Page = () => {
                 </Typography>
               </Stack>
             </Stack>
-            <QueryDemonstrative/>
+            <QueryDemonstrative userData={userData} abilities={abilities} />
           </Stack>
         </Container>
       </Box>

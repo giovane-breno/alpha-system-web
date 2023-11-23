@@ -24,6 +24,14 @@ export const SideNav = (props) => {
   const pathname = usePathname();
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
 
+  let abilities;
+  if (typeof window !== 'undefined') {
+    const adminData = localStorage.getItem('admin-data');
+    const parsedData = adminData ? JSON.parse(adminData) : null;
+    abilities = parsedData?.abilities || '';
+  }
+
+
   const content = (
     <Scrollbar
       sx={{
@@ -55,7 +63,7 @@ export const SideNav = (props) => {
           >
             <Logo />
           </Box>
-          <CompanyModal/>
+        <CompanyModal />
         </Box>
         <Divider sx={{ borderColor: 'neutral.700' }} />
         <Box
@@ -79,6 +87,7 @@ export const SideNav = (props) => {
               const active = item.path ? (pathname === item.path) : false;
 
               return (
+                (abilities.includes(item.permission) || (item.permission === '')) &&
                 <SideNavItem
                   active={active}
                   disabled={item.disabled}

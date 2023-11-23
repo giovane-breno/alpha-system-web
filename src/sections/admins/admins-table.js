@@ -24,6 +24,7 @@ import { getInitials } from 'src/utils/get-initials';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import { useState } from 'react';
 import { DeleteModal, DemoteModal, MenuButton, PromoteModal, ViewModal } from './modal/admins-actions-modal';
+import { ErrorOutline } from '@mui/icons-material';
 
 export const AdminsTable = (props) => {
   const {

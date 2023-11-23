@@ -30,6 +30,10 @@ const Page = () => {
   const [refreshState, setRefreshState] = useState();
   const { data, pagination, isLoading, isEmpty } = FindActiveCompanies(page, filter, refreshState);
 
+  const adminData = localStorage.getItem('admin-data');
+  const parsedData = adminData ? JSON.parse(adminData) : null;
+  const abilities = parsedData?.abilities || '';
+
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
@@ -81,25 +85,27 @@ const Page = () => {
                   Tabela contendo todas as Empresas cadastradas.
                 </Typography>
               </Stack>
-              <div>
-                <Link href={"/empresas/cadastrar"}>
-
-                  <Button
-                    color='success'
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <PlusIcon />
-                      </SvgIcon>
-                    )}
-                    variant="contained"
-                  >
-                    Cadastrar Empresa
-                  </Button>
-                </Link>
-              </div>
+              {abilities.includes('createCompany') &&
+                <div>
+                  <Link href={"/empresas/cadastrar"}>
+                    <Button
+                      color='success'
+                      startIcon={(
+                        <SvgIcon fontSize="small">
+                          <PlusIcon />
+                        </SvgIcon>
+                      )}
+                      variant="contained"
+                    >
+                      Cadastrar Empresa
+                    </Button>
+                  </Link>
+                </div>
+              }
             </Stack>
-            <CompaniesSearch filter={filter} setFilter={setFilter}/>
+            <CompaniesSearch filter={filter} setFilter={setFilter} />
             <CompaniesTable
+              abilities={abilities}
               count={pagination.total_pages}
               items={data}
               onPageChange={handlePageChange}

@@ -27,25 +27,25 @@ const App = (props) => {
     <CacheProvider value={emotionCache}>
       <Head>
         <title>
-          Alpha System
+          A L P H A - S Y S T E M
         </title>
         <meta
           name="viewport"
           content="initial-scale=1, width=device-width"
         />
       </Head>
-        <AuthProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <AuthConsumer>
-              {
-                (auth) => auth.isLoading
-                  ? <SplashScreen />
-                  : getLayout(<Component {...pageProps} />)
-              }
-            </AuthConsumer>
-          </ThemeProvider>
-        </AuthProvider>
+      <AuthProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AuthConsumer>
+            {
+              (auth) => auth.isLoading
+                ? <SplashScreen />
+                : getLayout(<Component {...pageProps} />)
+            }
+          </AuthConsumer>
+        </ThemeProvider>
+      </AuthProvider>
     </CacheProvider>
   );
 };

@@ -7,7 +7,7 @@ import { CheckCircle, Close, Delete, Done, Edit, Info, Remove, UnfoldMore, Visib
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import ChevronUpDownIcon from '@heroicons/react/24/solid/ChevronUpDownIcon';
 import { useEffect, useState } from 'react';
-import { FetchCompanies, FindActiveCustomer } from 'src/services/CompaniesService';
+import { CheckExistingCompany, FetchCompanies, FindActiveCustomer } from 'src/services/CompaniesService';
 import Toast from 'src/components/toast';
 
 const small = {
@@ -24,9 +24,20 @@ const small = {
 
 
 export const CompanyModal = () => {
-    useEffect(() => {
-        CheckExistingCompany();
-    }, []);
+    let abilities;
+    let userData;
+
+    if (typeof window !== 'undefined') {
+        const adminData = localStorage.getItem('admin-data');
+        const parsedData = adminData ? JSON.parse(adminData) : null;
+        userData = JSON.parse(localStorage.getItem('user-data'));
+        abilities = parsedData?.abilities || '';
+
+        if (abilities === '') {
+            localStorage.setItem('company-data', JSON.stringify(userData?.company));
+        }
+
+    }
 
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState('0');
@@ -35,10 +46,9 @@ export const CompanyModal = () => {
     const handleClose = () => setOpen(false);
     const { data: companiesArray, isLoading: customersLoading } = FetchCompanies();
 
-    const CheckExistingCompany = () => {
-        let company = localStorage.getItem(('company-data'));
-        setCompany(JSON.parse(company));
-    }
+    useEffect(() => {
+        setCompany(CheckExistingCompany())
+    }, []);
 
     const UpdateCompany = (company) => {
         setCompany(company);
@@ -53,49 +63,80 @@ export const CompanyModal = () => {
 
     return (
         <div>
-            <Box onClick={handleOpen}
-                sx={{
-                    alignItems: 'center',
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderRadius: 1,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    mt: 2,
-                    p: '12px'
-                }}
-            >
-                <div>
-                    <Typography
-                        color="inherit"
-                        variant="subtitle1"
-                    >
-                        {(company) ?
-                            (company.name)
-                            :
-                            "Nenhuma Empresa Selecionada"
-                        }
-                    </Typography>
-                    <Typography
-                        color="neutral.400"
-                        variant="body2"
-                    >
-                        {(company) &&
-                            (company.cnpj)
-                        }
-
-                    </Typography>
-                </div>
-                <IconButton
+            {abilities === '' ?
+                <Box
                     sx={{
-                        color: "#fff",
-                        borderRadius: '25%',
-                        "&:hover": { backgroundColor: "info.main" }
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                        borderRadius: 1,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        mt: 2,
+                        p: '12px'
                     }}
-                    size='small'>
-                    <UnfoldMore />
-                </IconButton>
-            </Box>
+                >
+
+
+                    <div>
+                        <Typography
+                            color="inherit"
+                            variant="subtitle1"
+                        >
+                            {userData?.company.name}
+                        </Typography>
+                        <Typography
+                            color="neutral.400"
+                            variant="body2"
+                        >
+                            {userData?.company.CNPJ}
+                        </Typography>
+                    </div>
+                </Box>
+                :
+                <Box onClick={handleOpen}
+                    sx={{
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                        borderRadius: 1,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        mt: 2,
+                        p: '12px'
+                    }}
+                >                        <div>
+                        <Typography
+                            color="inherit"
+                            variant="subtitle1"
+                        >
+                            {(company) ?
+                                (company.name)
+                                :
+                                "Nenhuma Empresa Selecionada"
+                            }
+                        </Typography>
+                        <Typography
+                            color="neutral.400"
+                            variant="body2"
+                        >
+                            {(company) &&
+                                (company.cnpj)
+                            }
+
+                        </Typography>
+                    </div>
+                    <IconButton
+                        sx={{
+                            color: "#fff",
+                            borderRadius: '25%',
+                            "&:hover": { backgroundColor: "info.main" }
+                        }}
+                        size='small'>
+                        <UnfoldMore />
+                    </IconButton>
+                </Box>
+            }
+
 
             <Modal
                 open={open}

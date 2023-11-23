@@ -13,6 +13,7 @@ export const items = [
   {
     title: 'Inicio',
     path: '/',
+    permission: '',
     icon: (
       <SvgIcon fontSize="small">
         <House />
@@ -22,6 +23,7 @@ export const items = [
   {
     title: 'Consultas',
     path: '/consultas',
+    permission: '',
     icon: (
       <SvgIcon fontSize="small">
         <ManageSearch />
@@ -31,6 +33,8 @@ export const items = [
   {
     title: 'Funcionarios',
     path: '/funcionarios',
+    permission: 'isOperator',
+
     icon: (
       <SvgIcon fontSize="small">
         <Person />
@@ -40,15 +44,19 @@ export const items = [
   {
     title: 'Demonstrativos',
     path: '/demonstrativos',
+    permission: 'doPayment',
+
     icon: (
       <SvgIcon fontSize="small">
         <Receipt />
       </SvgIcon>
     )
+
   },
   {
     title: 'Empresas',
     path: '/empresas',
+    permission: 'isOperator',
     icon: (
       <SvgIcon fontSize="small">
         <Apartment />
@@ -58,6 +66,8 @@ export const items = [
   {
     title: 'Recursos Humanos',
     path: '/rh',
+    permission: 'isOperator',
+
     icon: (
       <SvgIcon fontSize="small">
         <AccountBox />
@@ -67,6 +77,7 @@ export const items = [
   {
     title: 'Administradores',
     path: '/admins',
+    permission: 'isAdmin',
     icon: (
       <SvgIcon fontSize="small">
         <AdminPanelSettings />

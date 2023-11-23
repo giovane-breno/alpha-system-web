@@ -17,12 +17,12 @@ const Page = () => (
   <>
     <Head>
       <title>
-        Overview | Devias Kit
+        A L P H A - S Y S T E M
       </title>
     </Head>
     <Box
       component="main"
-      sx={{
+      sx={{ 
         flexGrow: 1,
         py: 8
       }}

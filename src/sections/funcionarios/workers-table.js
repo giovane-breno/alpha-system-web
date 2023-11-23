@@ -28,6 +28,7 @@ import { ErrorOutline } from '@mui/icons-material';
 
 export const WorkersTable = (props) => {
   const {
+    abilities,
     count = 0,
     items = [],
     onPageChange = () => { },
@@ -103,7 +104,9 @@ export const WorkersTable = (props) => {
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
                             <ViewModal id={data.id} data={data} />
-                            <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
+                            {abilities.includes('deleteUser') &&
+                              <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
+                            }
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>

@@ -4,7 +4,9 @@ import api from "../api";
 
 export const CheckExistingCompany = () => {
     let company = localStorage.getItem(('company-data'));
-    return (JSON.parse(company));
+    if (company !== 'undefined') {
+        return (JSON.parse(company));
+    }
 }
 
 export const FindActiveCompanies = (page, filter, refreshState) => {
