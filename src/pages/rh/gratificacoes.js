@@ -91,8 +91,10 @@ const Page = () => {
                 </Typography>
               </Stack>
             </Stack>
-            <GratificationFilter filter={filter} setFilter={setFilter}/>
+            <GratificationFilter filter={filter} setFilter={setFilter} />
             <GratificationTable
+              refreshState={refreshState}
+              setRefreshState={setRefreshState}
               count={pagination.total_pages}
               items={data}
               onPageChange={handlePageChange}

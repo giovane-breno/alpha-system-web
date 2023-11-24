@@ -126,7 +126,7 @@ export const MenuButton = () => {
     );
 }
 
-export const ViewModal = () => {
+export const ViewModal = ({id, refreshState, setRefreshState}) => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);

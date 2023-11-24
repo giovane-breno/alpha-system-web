@@ -29,6 +29,8 @@ import { ErrorOutline } from '@mui/icons-material';
 
 export const BenefitsTable = (props) => {
   const {
+   refreshState,
+    setRefreshState,
     count = 0,
     items = [],
     onPageChange = () => { },
@@ -97,8 +99,7 @@ export const BenefitsTable = (props) => {
                         </TableCell>
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
-                            <ViewModal id={data.id} />
-                            <DeleteModal id={data.id} />
+                            <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>

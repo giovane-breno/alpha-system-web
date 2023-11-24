@@ -93,6 +93,8 @@ const Page = () => {
             </Stack>
             <BenefitsSearch filter={filter} setFilter={setFilter} />
             <BenefitsTable
+              refreshState={refreshState}
+              setRefreshState={setRefreshState}
               count={pagination.total_pages}
               items={data}
               onPageChange={handlePageChange}

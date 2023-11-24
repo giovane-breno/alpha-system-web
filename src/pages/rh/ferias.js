@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { addDays, subDays, subHours } from 'date-fns';
-import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography, setRef } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { applyPagination } from 'src/utils/apply-pagination';
@@ -96,8 +96,10 @@ const Page = () => {
                 </Typography>
               </Stack>
             </Stack>
-            <VacationFilter filter={filter} setFilter={setFilter}/>
+            <VacationFilter filter={filter} setFilter={setFilter} />
             <VacationTable
+              refreshState={refreshState}
+              setRefreshState={setRefreshState}
               count={pagination.total_pages}
               items={data}
               onPageChange={handlePageChange}

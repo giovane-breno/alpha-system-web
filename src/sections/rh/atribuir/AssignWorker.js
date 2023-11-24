@@ -69,6 +69,8 @@ export const AssignWorker = () => {
 
     });
 
+    const [error, setError] = useState();
+
     const [formGratification, setFormGratification] = useState({
         reason: '',
         bonification: '',
@@ -289,9 +291,7 @@ export const AssignWorker = () => {
                                 </LocalizationProvider>
                             </Box>
 
-                            <Button variant="contained" color="warning" sx={{ maxWidth: 500, width: 500 }}>
-                                Inserir
-                            </Button>
+                            
                         </>
                     }
                     {formHeader.option && formHeader.option.id == 2 &&
@@ -352,9 +352,7 @@ export const AssignWorker = () => {
                                 </LocalizationProvider>
                             </Box>
 
-                            <Button variant="contained" color="warning" sx={{ maxWidth: 500, width: 500 }}>
-                                Inserir
-                            </Button>
+                            
                         </>
                     }
                     {formHeader.option && formHeader.option.id == 3 &&
@@ -381,9 +379,7 @@ export const AssignWorker = () => {
                                 />
                             </Box>
 
-                            <Button variant="contained" color="warning" sx={{ maxWidth: 500, width: 500 }}>
-                                Inserir
-                            </Button>
+                            
                         </>
                     }
                     {formHeader.option && formHeader.option.id == 4 &&
@@ -431,10 +427,6 @@ export const AssignWorker = () => {
                                         }} sx={{ maxWidth: 500 }} />
                                 </LocalizationProvider>
                             </Box>
-
-                            <Button variant="contained" color="warning" onClick={saveForm} sx={{ maxWidth: 500, width: 500 }}>
-                                Inserir
-                            </Button>
                         </>
                     }
 

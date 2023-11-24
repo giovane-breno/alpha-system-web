@@ -133,7 +133,7 @@ export const AuthProvider = (props) => {
 
     const isAdmin = {
       name: data.user?.isAdmin?.name,
-      abilities: data.user?.isAdmin?.abilities && JSON.parse(data.user.isAdmin.abilities),
+      abilities: data.user?.isAdmin?.abilities && data.user.isAdmin.abilities,
     }
 
     try {

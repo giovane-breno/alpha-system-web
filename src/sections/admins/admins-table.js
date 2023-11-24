@@ -28,6 +28,8 @@ import { ErrorOutline } from '@mui/icons-material';
 
 export const AdminsTable = (props) => {
   const {
+    refreshState,
+    setRefreshState,
     count = 0,
     items = [],
     onPageChange = () => { },
@@ -93,8 +95,8 @@ export const AdminsTable = (props) => {
                         </TableCell>
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
-                            <ViewModal id={data.id} />
-                            <MenuButton id={data.id} />
+                            <ViewModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
+                            <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>

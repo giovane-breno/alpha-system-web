@@ -97,6 +97,8 @@ const Page = () => {
             </Stack>
             <IncidentFilter filter={filter} setFilter={setFilter} />
             <IncidentTable
+              refreshState={refreshState}
+              setRefreshState={setRefreshState}
               count={pagination.total_pages}
               items={data}
               onPageChange={handlePageChange}

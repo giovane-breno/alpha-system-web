@@ -53,6 +53,7 @@ export const CreateModal = ({refreshState, setRefreshState}) => {
             enqueueSnackbar('Verifique os erros do formulário!', { variant: 'error', position: 'top-right' });
             const path = error.response?.data.errors;
             setError(path);
+            console.log(error);
         }
 
     }

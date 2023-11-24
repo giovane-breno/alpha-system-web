@@ -175,7 +175,7 @@ export const ViewModal = ({ id, refreshState, setRefreshState }) => {
                     <Box sx={large}>
                         <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
                             <Typography variant="h6" component="h4" >
-                                Ver Detalhes - {isDisabled ? '[MODO VISUALIZAÇÃO]' : '[MODO EDIÇÃO]'}
+                             Ver Detalhes {!isDisabled && ' - [MODO EDIÇÃO]'}
                             </Typography>
                             <IconButton onClick={handleClose} sx={{ p: 0 }}>
                                 <Close />

@@ -222,7 +222,7 @@ export const ViewModal = ({ id, refreshState, setRefreshState }) => {
                     <Box sx={large}>
                         <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
                             <Typography variant="title" component="h4">
-                                Ver Detalhes - {isDisabled ? '[MODO VISUALIZAÇÃO]' : '[MODO EDIÇÃO]'}
+                                Ver Detalhes {!isDisabled && ' - [MODO EDIÇÃO]'}
                             </Typography>
                             <IconButton onClick={handleClose} sx={{ p: 0 }}>
                                 <Close />
@@ -829,7 +829,7 @@ export const DeleteModal = ({ id, refreshState, setRefreshState }) => {
             const { status } = await DeleteWorker(id);
             if (status === 'success') {
                 refreshState = setRefreshState(!refreshState);
-                enqueueSnackbar('Funcionário deletado com sucesso!', { variant: 'success', position: 'top-right' });
+                enqueueSnackbar('Funcionário removido com sucesso!', { variant: 'success', position: 'top-right' });
                 setError("");
             }
         } catch (error) {

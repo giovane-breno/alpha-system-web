@@ -60,7 +60,7 @@ const data = [
   {
     url: 'rh/atribuir',
     title: 'Atribuir',
-    permission: 'createVacation',
+    permission: '',
     description: 'Atribuição de Férias, Benefícios, Gratificações ou Incidentes',
     icon: <LibraryAdd color='success' sx={{ height: 100, width: 80 }} />,
   },

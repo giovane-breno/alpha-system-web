@@ -88,11 +88,13 @@ const Page = () => {
                 </Typography>
               </Stack>
               <div>
-                <CreateModal refreshState={refreshState} setRefreshState={setRefreshState}/>
+                <CreateModal refreshState={refreshState} setRefreshState={setRefreshState} />
               </div>
             </Stack>
-            <DivisoesSearch filter={filter} setFilter={setFilter}/>
+            <DivisoesSearch filter={filter} setFilter={setFilter} />
             <DivisoesTable
+              refreshState={refreshState}
+              setRefreshState={setRefreshState}
               count={pagination.total_pages}
               items={data}
               onPageChange={handlePageChange}

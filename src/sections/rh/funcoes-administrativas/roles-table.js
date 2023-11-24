@@ -29,6 +29,8 @@ import { ErrorOutline } from '@mui/icons-material';
 
 export const RolesTable = (props) => {
   const {
+   refreshState,
+    setRefreshState,
     count = 0,
     items = [],
     onPageChange = () => { },
@@ -51,9 +53,6 @@ export const RolesTable = (props) => {
                 </TableCell>
                 <TableCell>
                   Função
-                </TableCell>
-                <TableCell>
-                  Permissões
                 </TableCell>
                 <TableCell>
                   Data da Criação
@@ -82,15 +81,12 @@ export const RolesTable = (props) => {
                           {data.name}
                         </TableCell>
                         <TableCell>
-                          {data.abilities}
-                        </TableCell>
-                        <TableCell>
                           <Chip sx={{ backgroundColor: 'info.main', color: 'white' }} label={data.created_at} size='small' />
                         </TableCell>
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
-                            <ViewModal id={data.id} />
-                            <DeleteModal id={data.id} />
+                            <ViewModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState}/>
+                            <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>

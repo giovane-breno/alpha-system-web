@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { subDays, subHours } from 'date-fns';
-import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Button, Container, Link, Stack, SvgIcon, Typography, setRef } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { AdminsTable } from 'src/sections/admins/admins-table';
@@ -92,16 +92,18 @@ const Page = () => {
                 </Button>
               </div>
             </Stack>
-            <AdminsSearch filter={filter} setFilter={setFilter}/>
+            <AdminsSearch filter={filter} setFilter={setFilter} />
             <AdminsTable
-               count={pagination.total_pages}
-               items={data}
-               onPageChange={handlePageChange}
-               onRowsPerPageChange={handleRowsPerPageChange}
-               page={page}
-               rowsPerPage={pagination.per_page}
-               isLoading={isLoading}
-               isEmpty={isEmpty}
+              refreshState={refreshState}
+              setRefreshState={setRefreshState}
+              count={pagination.total_pages}
+              items={data}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              page={page}
+              rowsPerPage={pagination.per_page}
+              isLoading={isLoading}
+              isEmpty={isEmpty}
 
             />
           </Stack>

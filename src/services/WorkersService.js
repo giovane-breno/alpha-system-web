@@ -45,6 +45,24 @@ export const FetchRoles = () => {
     return { data, isLoading, isEmpty };
 }
 
+export const FetchAdminRoles = () => {
+    const [data, setData] = useState([]);
+    const [isLoading, setLoading] = useState(true);
+    const [isEmpty, setEmpty] = useState(true);
+    const url = `l/roles/a`;
+
+    useEffect(() => {
+        api.get(url).then((response) => {
+            setData(response.data.data);
+            setEmpty(false)
+        });
+
+        setLoading(false);
+    }, []);
+
+    return { data, isLoading, isEmpty };
+}
+
 export const FetchDivisions = () => {
     const [data, setData] = useState([]);
     const [isLoading, setLoading] = useState(true);

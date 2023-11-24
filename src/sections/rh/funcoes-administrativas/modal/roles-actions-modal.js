@@ -46,7 +46,7 @@ const data = [
     }
 ];
 
-export const ViewModal = () => {
+export const ViewModal = ({id, refreshState, setRefreshState}) => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -80,7 +80,7 @@ export const ViewModal = () => {
                 <Box sx={small}>
                     <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
                         <Typography variant="h6" component="h4" >
-                            Ver Detalhes
+                             Ver Detalhes - {!isDisabled && '[MODO EDIÇÃO]'}
                         </Typography>
                         <IconButton onClick={handleClose} sx={{ p: 0 }}>
                             <Close />
@@ -130,7 +130,7 @@ export const ViewModal = () => {
     );
 }
 
-export const DeleteModal = () => {
+export const DeleteModal = ({ id, refreshState, setRefreshState }) => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);

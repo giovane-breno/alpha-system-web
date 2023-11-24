@@ -217,15 +217,65 @@ export const CreateIncident = async (header, form) => {
     return { data: request.data.data, status: request.data.status };
 };
 
+export const FindIncident = async (id) => {
+    const request = await api.get(`incident/${id}`);
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const UpdateIncident = async (id, form) => {
+    const request = await api
+        .put(`/incident/${id}`, {
+            user_id: form.id,
+            incident_reason: form.incident_reason,
+            discounted_amount: form.discounted_amount,
+            start_date: form.start_date,
+            end_date: form.end_date,
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteIncident = async (id) => {
+    const request = await api.delete(`incident/${id}`);
+    return { data: request.data, status: request.data.status };
+};
+
+
+export const FindGratification = async (id) => {
+    const request = await api.get(`gratification/${id}`);
+    return { data: request.data.data, status: request.data.status };
+};
+
 export const CreateGratification = async (header, form) => {
     const request = await api
         .post("/gratification", {
             user_id: header.worker.id,
-            reason: form.gratification_reason,
-            bonification: form.bonus,
+            gratification_reason: form.reason,
+            bonus: form.bonification,
             start_date: form.start_date,
             end_date: form.end_date,
         });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const UpdateGratification = async (id, form) => {
+    const request = await api
+        .put(`/gratification/${id}`, {
+            user_id: form.id,
+            gratification_reason: form.gratification_reason,
+            bonus: form.bonus,
+            start_date: form.start_date,
+            end_date: form.end_date,
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteGratification = async (id) => {
+    const request = await api.delete(`gratification/${id}`);
+    return { data: request.data, status: request.data.status };
+};
+
+export const FindBenefit = async (id) => {
+    const request = await api.get(`benefit/${id}`);
     return { data: request.data.data, status: request.data.status };
 };
 
@@ -238,6 +288,27 @@ export const CreateBenefit = async (header, form) => {
     return { data: request.data.data, status: request.data.status };
 };
 
+export const UpdateBenefit = async (id, form) => {
+    const request = await api
+        .put(`/benefit/${id}`, {
+            user_id: id,
+            benefit_id: form.benefit,
+
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteBenefit = async (id) => {
+    const request = await api.delete(`benefit/${id}`);
+    return { data: request.data, status: request.data.status };
+};
+
+export const FindVacation = async (id) => {
+    const request = await api.get(`vacation/${id}`);
+    return { data: request.data.data, status: request.data.status };
+};
+
+
 export const CreateVacation = async (header, form) => {
     const request = await api
         .post("/vacation", {
@@ -245,6 +316,26 @@ export const CreateVacation = async (header, form) => {
             start_date: form.start_date,
             end_date: form.end_date,
         });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const UpdateVacation = async (id, form) => {
+    const request = await api
+        .put(`/vacation/${id}`, {
+            user_id: id,
+            start_date: form.start_date,
+            end_date: form.end_date,
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteVacation = async (id) => {
+    const request = await api.delete(`vacation/${id}`);
+    return { data: request.data, status: request.data.status };
+};
+
+export const FindBenefitType = async (id) => {
+    const request = await api.get(`benefit/t/${id}`);
     return { data: request.data.data, status: request.data.status };
 };
 
@@ -258,6 +349,25 @@ export const CreateBenefitType = async (form) => {
     return { data: request.data.data, status: request.data.status };
 };
 
+export const UpdateBenefitType = async (id, form) => {
+    const request = await api
+        .put(`/benefit/t/${id}`, {
+            name: form.name,
+            bonus: form.bonus,
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteBenefitType = async (id) => {
+    const request = await api.delete(`/benefit/t/${id}`);
+    return { data: request.data, status: request.data.status };
+};
+
+export const FindDivision = async (id) => {
+    const request = await api.get(`division/${id}`);
+    return { data: request.data.data, status: request.data.status };
+};
+
 export const CreateDivision = async (form) => {
     const request = await api
         .post("/division/", {
@@ -265,6 +375,25 @@ export const CreateDivision = async (form) => {
             bonus: form.bonus,
 
         });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const UpdateDivision = async (id, form) => {
+    const request = await api
+        .put(`/division/${id}`, {
+            name: form.name,
+            bonus: form.bonus,
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteDivision = async (id) => {
+    const request = await api.delete(`division/${id}`);
+    return { data: request.data, status: request.data.status };
+};
+
+export const FindRole = async (id) => {
+    const request = await api.get(`role/${id}`);
     return { data: request.data.data, status: request.data.status };
 };
 
@@ -278,6 +407,25 @@ export const CreateRole = async (form) => {
     return { data: request.data.data, status: request.data.status };
 };
 
+export const UpdateRole = async (id, form) => {
+    const request = await api
+        .put(`/role/${id}`, {
+            name: form.name,
+            base_salary: form.base_salary,
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteRole = async (id) => {
+    const request = await api.delete(`role/${id}`);
+    return { data: request.data, status: request.data.status };
+};
+
+export const FindAdminRole = async (id) => {
+    const request = await api.get(`admin_role/${id}`);
+    return { data: request.data.data, status: request.data.status };
+};
+
 export const CreateAdminRole = async (form) => {
     const abilitiesValues = form.abilities.map((ability) => ability.value);
 
@@ -288,4 +436,36 @@ export const CreateAdminRole = async (form) => {
 
         });
     return { data: request.data.data, status: request.data.status };
+};
+
+export const UpdateAdminRole = async (id, form) => {
+    const request = await api
+        .put(`/admin_role/${id}`, {
+            name: form.name,
+            abilities: form.abilities,
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteAdminRole = async (id) => {
+    const request = await api.delete(`admin_role/${id}`);
+    return { data: request.data, status: request.data.status };
+};
+
+export const FindAdmin = async (id) => {
+    const request = await api.get(`user/a/${id}`);
+    return { data: request.data.data, status: request.data.status };
+};
+export const UpdateAdmin = async (id, form) => {
+    const request = await api
+        .put(`user/a/${id}`, {
+            user_id: form.user_id,
+            admin_role_id: form.role.id,
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
+export const DeleteAdmin = async (id) => {
+    const request = await api.delete(`user/a/${id}`);
+    return { data: request.data, status: request.data.status };
 };

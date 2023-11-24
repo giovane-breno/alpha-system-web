@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -6,6 +5,9 @@ import Modal from '@mui/material/Modal';
 import { Autocomplete, Divider, Grid, IconButton, InputAdornment, Menu, MenuItem, SvgIcon, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField } from '@mui/material';
 import { Close, Delete, Done, Edit, ExpandLess, ExpandMore, Info, MoreVert, Visibility } from '@mui/icons-material';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
+import { useState } from 'react';
+import { DeleteBenefit, UpdateBenefit } from 'src/services/HumanResourceService';
+import { enqueueSnackbar } from 'notistack';
 
 const large = {
     position: 'absolute',
@@ -46,94 +48,27 @@ const data = [
     }
 ];
 
-export const ViewModal = () => {
-    const [open, setOpen] = React.useState(false);
+export const DeleteModal = ({ id, refreshState, setRefreshState }) => {
+    const [open, setOpen] = useState(false);
+    const [error, setError] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const [value, setValue] = React.useState('0');
+    const deleteForm = async () => {
+        try {
+            const { status } = await DeleteBenefit(id);
+            if (status === 'success') {
+                refreshState = setRefreshState(!refreshState);
+                enqueueSnackbar('Benefício removido com sucesso!', { variant: 'success', position: 'top-right' });
+                setError("");
+            }
+        } catch (error) {
+            enqueueSnackbar('Verifique os erros!', { variant: 'error', position: 'top-right' });
+            const path = error.response?.data.errors;
+            setError(path);
+        }
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
-
-    return (
-        <div>
-            <IconButton onClick={handleOpen}
-                sx={{
-                    backgroundColor: 'info.main',
-                    color: "#fff",
-                    borderRadius: '25%',
-                    "&:hover": { backgroundColor: "info.main" },
-                    mr: 1
-                }}
-                size='small'>
-                <Visibility />
-            </IconButton>
-
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={small}>
-                    <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
-                        <Typography variant="h6" component="h4" >
-                            Ver Detalhes
-                        </Typography>
-                        <IconButton onClick={handleClose} sx={{ p: 0 }}>
-                            <Close />
-                        </IconButton>
-                    </Box>
-                    <Box sx={{ p: 2 }}>
-                        <Typography variant="title" component="h2" sx={{ mb: 2 }}>
-                            Dados do Benefício
-                        </Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField fullWidth label="Nome" variant="outlined" />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField fullWidth label="Bonus" variant="outlined" />
-                            </Grid>
-                        </Grid>
-                    </Box>
-                    <Divider />
-                    <Box sx={{ p: 2, justifyContent: 'right', display: 'flex' }}>
-                        <IconButton onClick={handleOpen}
-                            sx={{
-                                backgroundColor: 'info.main',
-                                color: "#fff",
-                                borderRadius: '25%',
-                                "&:hover": { backgroundColor: "info.main" },
-                                mr: 1,
-                            }}
-                            size='small'
-                        >
-                            <Edit />
-                        </IconButton>
-                        <IconButton onClick={handleOpen}
-                            sx={{
-                                backgroundColor: 'success.main',
-                                color: "#fff",
-                                borderRadius: '25%',
-                                "&:hover": { backgroundColor: "success.main" }
-                            }}
-                            size='small'>
-                            <Done />
-                        </IconButton>
-                    </Box>
-                </Box>
-            </Modal>
-        </div >
-    );
-}
-
-export const DeleteModal = () => {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    }
 
     return (
         <div>
@@ -143,7 +78,7 @@ export const DeleteModal = () => {
                     color: "#fff",
                     borderRadius: '25%',
                     "&:hover": { backgroundColor: "error.main" },
-                    mr: 1
+                    ml: 1
                 }}
                 size='small'>
 
@@ -176,7 +111,7 @@ export const DeleteModal = () => {
                             <Button onClick={handleClose} variant="contained" startIcon={<Close />} sx={{ mr: 1, backgroundColor: 'neutral.700', "&:hover": { backgroundColor: "neutral.800" } }}>
                                 Cancelar
                             </Button>
-                            <Button variant="contained" color='error' startIcon={<Delete />} >
+                            <Button variant="contained" color='error' onClick={deleteForm} startIcon={<Delete />} >
                                 Deletar
                             </Button>
                         </Box>

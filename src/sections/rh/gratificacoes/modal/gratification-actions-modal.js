@@ -1,22 +1,16 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Autocomplete, Divider, Grid, IconButton, InputAdornment, Menu, MenuItem, SvgIcon, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField } from '@mui/material';
+import { Autocomplete, CircularProgress, Divider, Grid, IconButton, InputAdornment, Menu, MenuItem, SvgIcon, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField } from '@mui/material';
 import { Close, Delete, Done, Edit, ExpandLess, ExpandMore, Info, MoreVert, Visibility } from '@mui/icons-material';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
-
-const large = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '70%', // Largura padrão
-    bgcolor: 'background.paper',
-    borderRadius: '.3rem',
-    boxShadow: 24,
-};
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { parse } from 'date-fns';
+import { DeleteGratification, FindGratification, UpdateGratification } from 'src/services/HumanResourceService';
+import { useState } from 'react';
+import { enqueueSnackbar } from 'notistack';
 
 const small = {
     position: 'absolute',
@@ -29,33 +23,67 @@ const small = {
     boxShadow: 24,
 };
 
-const top100Films = [
-    { label: 'The Shawshank Redemption', year: 1994 }
-];
-
-const data = [
-    {
-        type: 'Benefício',
-        description: 'Vale-Alimentação',
-        amount: '500,00',
-    },
-    {
-        type: 'Benefício',
-        description: 'Vale-Transporte',
-        amount: '234,00',
+export const ViewModal = ({ id, refreshState, setRefreshState }) => {
+    const [open, setOpen] = useState(false);
+    const [isLoading, setLoading] = useState(true);
+    const [isDisabled, setDisabled] = useState(true);
+    const [error, setError] = useState();
+    const handleClose = () => {
+        setOpen(false);
+        setDisabled(true);
     }
-];
 
-export const ViewModal = () => {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleEdit = () => setDisabled(!isDisabled);
 
-    const [value, setValue] = React.useState('0');
+    const [form, setForm] = useState({
+        id: '',
+        name: '',
+        gratification_reason: '',
+        bonus: '',
+        start_date: '',
+        end_date: '',
+    });
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+    const handleOpen = async () => {
+        try {
+            enqueueSnackbar('Carregando Informações, por favor aguarde!', { variant: 'info', position: 'top-right' });
+            setOpen(true);
+            setLoading(true);
+            const { data, status } = await FindGratification(id);
+            if (status === 'success') {
+
+                setForm({
+                    id: data.user.id,
+                    name: data.user.full_name,
+                    gratification_reason: data.gratification_reason,
+                    bonus: data.bonus,
+                    start_date: data.start_date.replace(/\//g, '-'),
+                    end_date: data.end_date.replace(/\//g, '-'),
+                })
+                setLoading(false);
+            }
+
+        } catch (error) {
+
+        }
+    }
+
+    const saveForm = async () => {
+        try {
+            const { status } = await UpdateGratification(id, form);
+            if (status === 'success') {
+                enqueueSnackbar('Férias atualizada com sucesso!', { variant: 'success', position: 'top-right' });
+                setError("");
+                setRefreshState(!refreshState);
+            }
+        } catch (error) {
+            console.log(error);
+            enqueueSnackbar('Verifique os erros do formulário!', { variant: 'error', position: 'top-right' });
+            const path = error.response?.data.errors;
+            setError(path);
+        }
+
+    }
 
     return (
         <div>
@@ -77,63 +105,134 @@ export const ViewModal = () => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={small}>
-                    <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
-                        <Typography variant="h6" component="h4" >
-                            Ver Detalhes
-                        </Typography>
-                        <IconButton onClick={handleClose} sx={{ p: 0 }}>
-                            <Close />
-                        </IconButton>
-                    </Box>
-                    <Box sx={{ p: 2 }}>
-                        <Typography variant="title" component="h2" sx={{ mb: 2 }}>
-                            Dados da Função
-                        </Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField fullWidth label="Nome" variant="outlined" />
+                {!isLoading ?
+                    <Box sx={small}>
+                        <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
+                            <Typography variant="h6" component="h4" >
+                                Ver Detalhes {!isDisabled && ' - [MODO EDIÇÃO]'}
+                            </Typography>
+                            <IconButton onClick={handleClose} sx={{ p: 0 }}>
+                                <Close />
+                            </IconButton>
+                        </Box>
+                        <Box sx={{ p: 2 }}>
+                            <Typography variant="title" component="h2" sx={{ mb: 2 }}>
+                                Dados da Função
+                            </Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField fullWidth label="Nome" variant="outlined" value={form.name} InputProps={{ readOnly: isDisabled }} />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField fullWidth label="Motivo" variant="outlined" value={form.gratification_reason} InputProps={{ readOnly: isDisabled }} onChange={e => { setForm({ ...form, gratification_reason: e.target.value }) }} error={!!(error?.gratification_reason)} helperText={error?.gratification_reason} />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField fullWidth label="Bonificação" type='number' variant="outlined" value={form.bonus} InputProps={{ readOnly: isDisabled }} onChange={e => { setForm({ ...form, bonus: e.target.value }) }} error={!!(error?.bonus)} helperText={error?.name} />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker label="Data de Início das Férias" variant="outlined" format="dd/MM/yyyy"
+                                            disablePast
+                                            readOnly={isDisabled}
+                                            value={parse(form.start_date, 'd-M-y', new Date())}
+                                            onChange={(e) => {
+                                                setForm({
+                                                    ...form,
+                                                    start_date: e,
+                                                });
+                                            }}
+                                            slotProps={{
+                                                textField: {
+                                                    fullWidth: 'true',
+                                                    required: 'true',
+                                                    error: false
+
+                                                },
+                                            }} sx={{ maxWidth: 500 }} />
+                                    </LocalizationProvider>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker label="Data de Fim das Férias" variant="outlined" format="dd/MM/yyyy"
+                                            disablePast
+                                            readOnly={isDisabled}
+                                            value={parse(form.end_date, 'd-M-y', new Date())}
+                                            onChange={(e) => {
+                                                setForm({
+                                                    ...form,
+                                                    end_date: e,
+                                                });
+                                            }}
+
+                                            slotProps={{
+                                                textField: {
+                                                    fullWidth: 'true',
+                                                    required: 'true',
+                                                    error: false
+
+                                                },
+                                            }} sx={{ maxWidth: 500 }} />
+                                    </LocalizationProvider>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField fullWidth label="Salário Base" variant="outlined" />
-                            </Grid>
-                        </Grid>
+                        </Box>
+                        <Divider />
+                        <Box sx={{ p: 2, justifyContent: 'right', display: 'flex' }}>
+                            <IconButton onClick={handleEdit}
+                                sx={{
+                                    backgroundColor: 'info.main',
+                                    color: "#fff",
+                                    borderRadius: '25%',
+                                    "&:hover": { backgroundColor: "info.main" },
+                                    mr: 1,
+                                }}
+                                size='small'
+                            >
+                                <Edit />
+                            </IconButton>
+                            <IconButton onClick={saveForm}
+                                sx={{
+                                    backgroundColor: 'success.main',
+                                    color: "#fff",
+                                    borderRadius: '25%',
+                                    "&:hover": { backgroundColor: "success.main" }
+                                }}
+                                size='small'>
+                                <Done />
+                            </IconButton>
+                        </Box>
                     </Box>
-                    <Divider />
-                    <Box sx={{ p: 2, justifyContent: 'right', display: 'flex' }}>
-                        <IconButton onClick={handleOpen}
-                            sx={{
-                                backgroundColor: 'info.main',
-                                color: "#fff",
-                                borderRadius: '25%',
-                                "&:hover": { backgroundColor: "info.main" },
-                                mr: 1,
-                            }}
-                            size='small'
-                        >
-                            <Edit />
-                        </IconButton>
-                        <IconButton onClick={handleOpen}
-                            sx={{
-                                backgroundColor: 'success.main',
-                                color: "#fff",
-                                borderRadius: '25%',
-                                "&:hover": { backgroundColor: "success.main" }
-                            }}
-                            size='small'>
-                            <Done />
-                        </IconButton>
-                    </Box>
-                </Box>
+                    :
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                        <CircularProgress color='error' />
+                    </div>
+                }
             </Modal>
         </div >
     );
 }
 
-export const DeleteModal = () => {
-    const [open, setOpen] = React.useState(false);
+export const DeleteModal = ({ id, refreshState, setRefreshState }) => {
+    const [open, setOpen] = useState(false);
+    const [error, setError] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    const deleteForm = async () => {
+        try {
+            const { status } = await DeleteGratification(id);
+            if (status === 'success') {
+                refreshState = setRefreshState(!refreshState);
+                enqueueSnackbar('Gratificação deletada com sucesso!', { variant: 'success', position: 'top-right' });
+                setError("");
+            }
+        } catch (error) {
+            enqueueSnackbar('Verifique os erros!', { variant: 'error', position: 'top-right' });
+            const path = error.response?.data.errors;
+            setError(path);
+        }
+
+    }
 
     return (
         <div>
@@ -143,7 +242,7 @@ export const DeleteModal = () => {
                     color: "#fff",
                     borderRadius: '25%',
                     "&:hover": { backgroundColor: "error.main" },
-                    mr: 1
+                    ml: 1
                 }}
                 size='small'>
 
@@ -176,7 +275,7 @@ export const DeleteModal = () => {
                             <Button onClick={handleClose} variant="contained" startIcon={<Close />} sx={{ mr: 1, backgroundColor: 'neutral.700', "&:hover": { backgroundColor: "neutral.800" } }}>
                                 Cancelar
                             </Button>
-                            <Button variant="contained" color='error' startIcon={<Delete />} >
+                            <Button variant="contained" color='error' onClick={deleteForm} startIcon={<Delete />} >
                                 Deletar
                             </Button>
                         </Box>

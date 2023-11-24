@@ -29,6 +29,8 @@ import { ErrorOutline, Warning } from '@mui/icons-material';
 
 export const VacationTable = (props) => {
   const {
+    setRefreshState,
+    refreshState,
     count = 0,
     items = [],
     onPageChange = () => { },
@@ -97,8 +99,8 @@ export const VacationTable = (props) => {
                         </TableCell>
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
-                            <ViewModal id={data.id} />
-                            <DeleteModal id={data.id} />
+                            <ViewModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
+                            <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>
