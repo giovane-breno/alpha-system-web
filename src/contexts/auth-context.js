@@ -80,7 +80,9 @@ export const AuthProvider = (props) => {
     try {
       ({ data, status } = await CheckUser());
     } catch (err) {
-      console.log(err);
+      // if (status === 'error') {
+      //   sessionStorage.clear();
+      // }
     }
 
     if (status === 'success') {

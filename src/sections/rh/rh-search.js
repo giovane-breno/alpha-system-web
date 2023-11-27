@@ -2,11 +2,11 @@ import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import { FilterList } from '@mui/icons-material';
 import { Card, Grid, IconButton, InputAdornment, OutlinedInput, SvgIcon, TextField } from '@mui/material';
 
-export const RhSearch = () => (
+export const RhSearch = ({filter, setFilter}) => (
   <Card sx={{ p: 2 }}>
     <Grid container spacing={2}>
       <Grid item xs={8}>
-        <TextField fullWidth label="Buscar Empresa" variant="outlined" sx={{ maxWidth: 500 }} InputProps={{
+        <TextField fullWidth label="Buscar Empresa" value={filter} onChange={e => setFilter(e.target.value)} variant="outlined" sx={{ maxWidth: 500 }} InputProps={{
           endAdornment: <InputAdornment position="start">
             <SvgIcon
               color="action"

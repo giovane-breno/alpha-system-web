@@ -2,6 +2,81 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import api from "../api";
 
+
+export const GetUserCount = () => {
+    const [data, setData] = useState(0);
+    const url = `data/user`;
+    try {
+        useEffect(() => {
+
+            api.get(url).then((response) => {
+                setData(response.data.data);
+            });
+        }, []);
+    } catch (error) {
+
+    }
+
+
+
+    return { data };
+};
+
+export const GetAdminCount = () => {
+    const [data, setData] = useState(0);
+    const url = `data/admin`;
+    try {
+        useEffect(() => {
+
+            api.get(url).then((response) => {
+                setData(response.data.data);
+            });
+        }, []);
+    } catch (error) {
+
+    }
+
+
+
+    return { data };
+};
+
+export const GetDemonstrativeSum = () => {
+    const [data, setData] = useState(0);
+    const url = `data/demonstrative`;
+    try {
+        useEffect(() => {
+            api.get(url).then((response) => {
+                setData(response.data.data);
+            });
+        }, []);
+    } catch (error) {
+
+    }
+
+
+    return { data };
+};
+
+export const GetSalarySum = () => {
+    const [data, setData] = useState(0);
+    const url = `data/salary`;
+    try {
+        useEffect(() => {
+
+            api.get(url).then((response) => {
+                setData(response.data.data);
+            });
+        }, []);
+    } catch (error) {
+
+    }
+
+
+
+    return { data };
+};
+
 export const FetchWorkers = (company) => {
     const [isLoading, setLoading] = useState(true);
     const [isEmpty, setEmpty] = useState(true);
@@ -108,7 +183,7 @@ export const FindActiveWorkers = (page, filter, refreshState, company) => {
         setIsLoading(true);
         if (company) {
             api
-                .get(`user?page=${page + 1}&company=${company?.id}`)
+                .get(`user?page=${page + 1}&company=${company?.id}&search=${filter}`)
                 .then((response) => {
                     response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                     setData(response.data.data.info);
@@ -133,7 +208,7 @@ export const FindActiveAdmins = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`user/a?page=${page + 1}`)
+            .get(`user/a?page=${page + 1}&search=${filter}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);

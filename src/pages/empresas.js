@@ -26,7 +26,7 @@ const breadcrumbs = [
 
 const Page = () => {
   const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState();
+  const [filter, setFilter] = useState('');
   const [refreshState, setRefreshState] = useState();
   const { data, pagination, isLoading, isEmpty } = FindActiveCompanies(page, filter, refreshState);
 

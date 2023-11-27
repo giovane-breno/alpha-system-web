@@ -12,7 +12,7 @@ export const FindActiveVacation = (page, filter, refreshState, company) => {
         setIsLoading(true);
         if (company) {
             api
-                .get(`vacation?page=${page + 1}&company=${company?.id}`)
+                .get(`vacation?page=${page + 1}&company=${company?.id}&search=${filter}`)
                 .then((response) => {
                     response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                     setData(response.data.data.info);
@@ -22,7 +22,7 @@ export const FindActiveVacation = (page, filter, refreshState, company) => {
                 .catch((error) => {
                     setIsEmpty(true);
                     setIsLoading(false);
-                });
+            });
         }
     }, [page, filter, refreshState, company]);
 
@@ -38,7 +38,7 @@ export const FindActiveGratification = (page, filter, refreshState, company) => 
         setIsLoading(true);
         if (company) {
             api
-                .get(`gratification?page=${page + 1}&company=${company?.id}`)
+                .get(`gratification?page=${page + 1}&company=${company?.id}&search=${filter}`)
                 .then((response) => {
                     console.log(response);
                     response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
@@ -65,7 +65,7 @@ export const FindActiveIncident = (page, filter, refreshState, company) => {
         setIsLoading(true);
         if (company) {
             api
-                .get(`incident?page=${page + 1}&company=${company?.id}`)
+                .get(`incident?page=${page + 1}&company=${company?.id}&search=${filter}`)
                 .then((response) => {
                     response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                     setData(response.data.data.info);
@@ -91,7 +91,7 @@ export const FindActiveBenefit = (page, filter, refreshState, company) => {
         setIsLoading(true);
         if (company) {
             api
-                .get(`benefit?page=${page + 1}&company=${company?.id}`)
+                .get(`benefit?page=${page + 1}&company=${company?.id}&search=${filter}`)
                 .then((response) => {
                     response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                     setData(response.data.data.info);
@@ -116,7 +116,7 @@ export const FindActiveBenefitType = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`benefit/t?page=${page + 1}`)
+            .get(`benefit/t?page=${page + 1}&search=${filter}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -140,7 +140,7 @@ export const FindActiveAdminRole = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`admin_role?page=${page + 1}`)
+            .get(`admin_role?page=${page + 1}&search=${filter}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -164,7 +164,7 @@ export const FindActiveRole = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`role?page=${page + 1}`)
+            .get(`role?page=${page + 1}&search=${filter}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -188,7 +188,7 @@ export const FindActiveDivision = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`division?page=${page + 1}`)
+            .get(`division?page=${page + 1}&search=${filter}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);
@@ -439,10 +439,12 @@ export const CreateAdminRole = async (form) => {
 };
 
 export const UpdateAdminRole = async (id, form) => {
+    const abilitiesValues = form.abilities.map((ability) => ability.value);
+
     const request = await api
         .put(`/admin_role/${id}`, {
             name: form.name,
-            abilities: form.abilities,
+            abilities: JSON.stringify(abilitiesValues),
         });
     return { data: request.data.data, status: request.data.status };
 };
@@ -456,6 +458,17 @@ export const FindAdmin = async (id) => {
     const request = await api.get(`user/a/${id}`);
     return { data: request.data.data, status: request.data.status };
 };
+
+export const CreateAdmin = async (form) => {
+    const request = await api
+        .post("user/a/", {
+            user_id: form.user_id?.id,
+            admin_role_id: form.admin_role_id?.id,
+
+        });
+    return { data: request.data.data, status: request.data.status };
+};
+
 export const UpdateAdmin = async (id, form) => {
     const request = await api
         .put(`user/a/${id}`, {

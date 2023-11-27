@@ -22,13 +22,13 @@ import { doLogin } from 'src/services/AuthenticationService';
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 
 const Page = () => {
-  useEffect(() => {
-    let token = sessionStorage.getItem('token');
-    if (token) {
-      enqueueSnackbar('Estamos o redirecionando, aguarde...', { variant: 'info', position: 'top-right' });
-      router.push('/');
-    }
-  }, []);
+  // useEffect(() => {
+  //   let token = sessionStorage.getItem('token');
+  //   if (token) {
+  //     enqueueSnackbar('Estamos o redirecionando, aguarde...', { variant: 'info', position: 'top-right' });
+  //     router.push('/');
+  //   }
+  // }, []);
   const router = useRouter();
   const [error, setError] = useState();
   const auth = useAuth();
@@ -43,7 +43,9 @@ const Page = () => {
   const saveForm = async () => {
     try {
       await auth.signIn(form);
-      router.refresh();
+      router.push('/');
+
+      // router.refresh();
 
 
     } catch (error) {

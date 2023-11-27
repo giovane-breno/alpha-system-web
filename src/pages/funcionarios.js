@@ -30,7 +30,7 @@ const Page = () => {
 
   const [company, setCompany] = useState();
   const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState();
+  const [filter, setFilter] = useState('');
   const [refreshState, setRefreshState] = useState(true);
   const { data, pagination, isLoading, isEmpty } = FindActiveWorkers(page, filter, refreshState, company);
 

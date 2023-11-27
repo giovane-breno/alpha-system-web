@@ -32,7 +32,7 @@ const breadcrumbs = [
 
 const Page = () => {
   const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState();
+  const [filter, setFilter] = useState('');
   const [refreshState, setRefreshState] = useState();
   const { data, pagination, isLoading, isEmpty } = FindActiveDivision(page, filter, refreshState);
 

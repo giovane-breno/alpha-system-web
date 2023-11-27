@@ -33,7 +33,7 @@ const breadcrumbs = [
 const Page = () => {
   const [company, setCompany] = useState();
   const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState();
+  const [filter, setFilter] = useState('');
   const [refreshState, setRefreshState] = useState();
   const { data, pagination, isLoading, isEmpty } = FindActiveRole(page, filter, refreshState);
 

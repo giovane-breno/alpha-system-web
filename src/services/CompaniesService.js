@@ -17,7 +17,7 @@ export const FindActiveCompanies = (page, filter, refreshState) => {
     useEffect(() => {
         setIsLoading(true);
         api
-            .get(`company?page=${page + 1}`)
+            .get(`company?page=${page + 1}&search=${filter}`)
             .then((response) => {
                 response.data.data.info.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
                 setData(response.data.data.info);

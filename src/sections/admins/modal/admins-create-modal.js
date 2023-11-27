@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -6,6 +5,11 @@ import Modal from '@mui/material/Modal';
 import { Autocomplete, Divider, Grid, IconButton, InputAdornment, Menu, MenuItem, SvgIcon, Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs, TextField } from '@mui/material';
 import { Close, Delete, Done, Edit, ExpandLess, ExpandMore, Info, MoreVert, Visibility } from '@mui/icons-material';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
+import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
+import { CreateAdmin, CreateDivision } from 'src/services/HumanResourceService';
+import { useState } from 'react';
+import { enqueueSnackbar } from 'notistack';
+import { FetchAdminRoles, FetchWorkers } from 'src/services/WorkersService';
 
 const large = {
     position: 'absolute',
@@ -29,126 +33,59 @@ const small = {
     boxShadow: 24,
 };
 
-const top100Films = [
-    { label: 'The Shawshank Redemption', year: 1994 }
-];
-
-const data = [
-    {
-        type: 'Benefício',
-        description: 'Vale-Alimentação',
-        amount: '500,00',
-    },
-    {
-        type: 'Benefício',
-        description: 'Vale-Transporte',
-        amount: '234,00',
-    }
-];
-
-export const MenuButton = () => {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleOpenMenu = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const openMenu = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    return (
-        <div>
-            <IconButton sx={{
-                backgroundColor: 'grey',
-                color: "#fff",
-                borderRadius: '25%',
-                "&:hover": { backgroundColor: "grey" },
-                ml: 1
-            }}
-                size='small'
-                aria-label="more"
-                id="long-button"
-                onClick={handleClick}
-            >
-                <MoreVert />
-            </IconButton>
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClose={handleClose}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                }}
-            >
-                <MenuItem><PromoteModal /></MenuItem>
-                <MenuItem><DemoteModal /></MenuItem>
-            </Menu>
-
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                sx={{ borderRadius: '20px' }}
-            >
-                <Box sx={small}>
-                    <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
-                        <Typography variant="title" component="h4" >
-                            Remover Dados
-                        </Typography>
-                        <IconButton onClick={handleClose} sx={{ p: 0 }}>
-                            <Close />
-                        </IconButton>
-                    </Box>
-                    <Box sx={{ p: 2, size: '300%', justifyContent: 'center', textAlign: 'center' }}>
-                        <Delete sx={{ color: 'error.main', height: '120px', width: '120px' }} />
-                        <Typography variant="h5" component="h4">Você tem certeza?</Typography>
-                        <Typography variant="subtitle1" component="h2" sx={{ mt: 3 }}>Você realmente deseja deletar esses dados?</Typography>
-                        <Typography variant="subtitle1" component="h4">Esse processo não pode ser desfeito.</Typography>
-                        <Divider sx={{ m: 2 }} />
-                        <Box sx={{ justifyContent: 'right', display: 'flex' }}>
-                            <Button onClick={handleClose} variant="contained" startIcon={<Close />} sx={{ mr: 1, backgroundColor: 'neutral.700', "&:hover": { backgroundColor: "neutral.800" } }}>
-                                Cancelar
-                            </Button>
-                            <Button variant="contained" color='error' startIcon={<Delete />} >
-                                Deletar
-                            </Button>
-                        </Box>
-                    </Box>
-                </Box>
-            </Modal>
-        </div>
-    );
-}
-
-export const ViewModal = ({id, refreshState, setRefreshState}) => {
-    const [open, setOpen] = React.useState(false);
+export const CreateModal = ({ refreshState, setRefreshState, company }) => {
+    const [open, setOpen] = useState(false);
+    const [error, setError] = useState();
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const { data: roles, isLoading: rolesLoading } = FetchAdminRoles();
+    const { data: workers, isLoading: workersLoading } = FetchWorkers(company);
 
-    const [value, setValue] = React.useState('0');
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+    const [form, setForm] = useState({
+        user_id: null,
+        admin_role_id: null,
+    });
+
+    const saveForm = async () => {
+        try {
+            const { status } = await CreateAdmin(form);
+            if (status === 'success') {
+                enqueueSnackbar('Administrador cadastrado com sucesso!', { variant: 'success', position: 'top-right' });
+
+                setError("");
+                setForm({
+                    user_id: '',
+                    admin_role_id: '',
+                });
+
+                setRefreshState(!refreshState);
+
+                handleClose();
+
+            }
+        } catch (error) {
+            enqueueSnackbar('Verifique os erros do formulário!', { variant: 'error', position: 'top-right' });
+            const path = error.response?.data.errors;
+            setError(path);
+        }
+
+    }
 
     return (
         <div>
-            <IconButton onClick={handleOpen}
-                sx={{
-                    backgroundColor: 'info.main',
-                    color: "#fff",
-                    borderRadius: '25%',
-                    "&:hover": { backgroundColor: "info.main" }
-                }}
-                size='small'>
-                <Visibility />
-            </IconButton>
+            <Button
+                onClick={handleOpen}
+                color='success'
+                startIcon={(
+                    <SvgIcon fontSize="small">
+                        <PlusIcon />
+                    </SvgIcon>
+                )}
+                variant="contained"
+            >
+                Cadastrar Administrador
+            </Button>
 
             <Modal
                 open={open}
@@ -158,34 +95,60 @@ export const ViewModal = ({id, refreshState, setRefreshState}) => {
             >
                 <Box sx={small}>
                     <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
-                        <Typography variant="title" component="h4">
-                            Ver Detalhes
+                        <Typography variant="h6" component="h4" >
+                            Cadastrar Administrador
                         </Typography>
                         <IconButton onClick={handleClose} sx={{ p: 0 }}>
                             <Close />
                         </IconButton>
                     </Box>
                     <Box sx={{ p: 2 }}>
-                        <Typography variant="subtitle" component="h2" sx={{ mb: 2 }}>
-                            Funções Administrativos
+                        <Typography variant="title" component="h2" sx={{ mb: 2 }}>
+                            Dados do Administrador
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <TextField fullWidth label="Função" variant="outlined" />
+                                <Autocomplete
+                                    fullWidth
+                                    options={workers}
+                                    sx={{ display: 'inline-block' }}
+                                    getOptionLabel={option => option.full_name}
+                                    value={form.user_id}
+                                    onChange={(e, value) => {
+                                        setForm({
+                                            ...form,
+                                            user_id: value,
+                                        });
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Funcionários" required error={!!(error?.role)} helperText={error?.role} />}
+                                />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField fullWidth label="Data da Promoção" variant="outlined" />
+                                <Autocomplete
+                                    fullWidth
+                                    options={roles}
+                                    sx={{ display: 'inline-block' }}
+                                    getOptionLabel={option => option.name}
+                                    value={form.admin_role_id}
+                                    onChange={(e, value) => {
+                                        setForm({
+                                            ...form,
+                                            admin_role_id: value,
+                                        });
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label="Funções Administrativas" required error={!!(error?.role)} helperText={error?.role} />}
+                                />
                             </Grid>
                         </Grid>
                     </Box>
                     <Divider />
                     <Box sx={{ p: 2, justifyContent: 'right', display: 'flex' }}>
-                        <IconButton onClick={handleClose}
+                        <IconButton onClick={saveForm}
                             sx={{
-                                backgroundColor: 'info.main',
+                                backgroundColor: 'success.main',
                                 color: "#fff",
                                 borderRadius: '25%',
-                                "&:hover": { backgroundColor: "info.main" }
+                                "&:hover": { backgroundColor: "success.main" }
                             }}
                             size='small'>
                             <Done />
@@ -194,127 +157,5 @@ export const ViewModal = ({id, refreshState, setRefreshState}) => {
                 </Box>
             </Modal>
         </div >
-    );
-}
-
-export const DemoteModal = () => {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
-    return (
-        <div>
-            <IconButton onClick={handleOpen}
-                size='small' color='error'>
-                <ExpandMore sx={{ mr: 1 }} />
-                Rebaixar
-            </IconButton>
-
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                sx={{ borderRadius: '20px' }}
-            >
-                <Box sx={small}>
-                    <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
-                        <Typography variant="title" component="h4" >
-                            Remover Dados
-                        </Typography>
-                        <IconButton onClick={handleClose} sx={{ p: 0 }}>
-                            <Close />
-                        </IconButton>
-                    </Box>
-                    <Box sx={{ p: 2, size: '300%', justifyContent: 'center', textAlign: 'center' }}>
-                        <Delete sx={{ color: 'error.main', height: '120px', width: '120px' }} />
-                        <Typography variant="h5" component="h4">Você tem certeza?</Typography>
-                        <Typography variant="subtitle1" component="h2" sx={{ mt: 3 }}>Você realmente deseja deletar esses dados?</Typography>
-                        <Typography variant="subtitle1" component="h4">Esse processo não pode ser desfeito.</Typography>
-                        <Divider sx={{ m: 2 }} />
-                        <Box sx={{ justifyContent: 'right', display: 'flex' }}>
-                            <Button onClick={handleClose} variant="contained" startIcon={<Close />} sx={{ mr: 1, backgroundColor: 'neutral.700', "&:hover": { backgroundColor: "neutral.800" } }}>
-                                Cancelar
-                            </Button>
-                            <Button variant="contained" color='error' startIcon={<Delete />} >
-                                Deletar
-                            </Button>
-                        </Box>
-                    </Box>
-                </Box>
-            </Modal>
-        </div>
-    );
-}
-
-export const PromoteModal = () => {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleOpenMenu = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const openMenu = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    return (
-        <div>
-            <IconButton onClick={handleOpen}
-                size='small' color='success'>
-                <ExpandLess sx={{ mr: 1 }} />
-                Promover
-            </IconButton>
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClose={handleClose}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                }}
-            >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
-            </Menu>
-
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                sx={{ borderRadius: '20px' }}
-            >
-                <Box sx={small}>
-                    <Box id="modal-modal-title" sx={{ borderBottom: 1, p: 2, borderColor: '#eaedf2', justifyContent: 'space-between', display: 'flex' }}>
-                        <Typography variant="title" component="h4" >
-                            Remover Dados
-                        </Typography>
-                        <IconButton onClick={handleClose} sx={{ p: 0 }}>
-                            <Close />
-                        </IconButton>
-                    </Box>
-                    <Box sx={{ p: 2, size: '300%', justifyContent: 'center', textAlign: 'center' }}>
-                        <Delete sx={{ color: 'error.main', height: '120px', width: '120px' }} />
-                        <Typography variant="h5" component="h4">Você tem certeza?</Typography>
-                        <Typography variant="subtitle1" component="h2" sx={{ mt: 3 }}>Você realmente deseja deletar esses dados?</Typography>
-                        <Typography variant="subtitle1" component="h4">Esse processo não pode ser desfeito.</Typography>
-                        <Divider sx={{ m: 2 }} />
-                        <Box sx={{ justifyContent: 'right', display: 'flex' }}>
-                            <Button onClick={handleClose} variant="contained" startIcon={<Close />} sx={{ mr: 1, backgroundColor: 'neutral.700', "&:hover": { backgroundColor: "neutral.800" } }}>
-                                Cancelar
-                            </Button>
-                            <Button variant="contained" color='error' startIcon={<Delete />} >
-                                Deletar
-                            </Button>
-                        </Box>
-                    </Box>
-                </Box>
-            </Modal>
-        </div>
     );
 }
