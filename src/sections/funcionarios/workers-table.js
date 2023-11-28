@@ -40,6 +40,8 @@ export const WorkersTable = (props) => {
 
     refreshState,
     setRefreshState,
+    divisions,
+    roles
   } = props;
 
   return (
@@ -104,7 +106,7 @@ export const WorkersTable = (props) => {
                         <TableCell>
                           <ButtonGroup aria-label="outlined primary button group">
                             <ViewModal id={data.id} data={data} refreshState={refreshState}
-                              setRefreshState={setRefreshState} />
+                              setRefreshState={setRefreshState} divisions={divisions} roles={roles} />
                             {abilities.includes('deleteUser') &&
                               <DeleteModal id={data.id} refreshState={refreshState} setRefreshState={setRefreshState} />
                             }

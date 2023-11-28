@@ -11,7 +11,7 @@ import { WorkersTable } from 'src/sections/funcionarios/workers-table';
 import { CustomersSearch, WorkersSearch } from 'src/sections/funcionarios/workers-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { Home, NavigateNext } from '@mui/icons-material';
-import { FindActiveWorkers } from 'src/services/WorkersService';
+import { FetchDivisions, FetchRoles, FindActiveWorkers } from 'src/services/WorkersService';
 import { CheckExistingCompany } from 'src/services/CompaniesService';
 
 const breadcrumbs = [
@@ -33,6 +33,8 @@ const Page = () => {
   const [filter, setFilter] = useState('');
   const [refreshState, setRefreshState] = useState(true);
   const { data, pagination, isLoading, isEmpty } = FindActiveWorkers(page, filter, refreshState, company);
+  const { data: divisions, isLoading: divisionsLoading } = FetchDivisions();
+  const { data: roles, isLoading: rolesLoading } = FetchRoles();
 
   let abilities;
 
@@ -123,6 +125,8 @@ const Page = () => {
               rowsPerPage={pagination.per_page}
               isLoading={isLoading}
               isEmpty={isEmpty}
+              divisions={divisions}
+              roles={roles}
 
               refreshState={refreshState}
               setRefreshState={setRefreshState}

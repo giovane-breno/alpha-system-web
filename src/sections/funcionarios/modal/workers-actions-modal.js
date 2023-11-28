@@ -38,7 +38,7 @@ const small = {
     boxShadow: 24,
 };
 
-export const ViewModal = ({ id, refreshState, setRefreshState }) => {
+export const ViewModal = ({ id, refreshState, setRefreshState, divisions, roles }) => {
     const handleClose = () => {
         setOpen(false);
         setDisabled(true);
@@ -51,8 +51,9 @@ export const ViewModal = ({ id, refreshState, setRefreshState }) => {
         setValue(newValue);
     };
     const [open, setOpen] = useState(false);
-    const { data: divisions, isLoading: divisionsLoading } = FetchDivisions();
-    const { data: roles, isLoading: rolesLoading } = FetchRoles();
+
+
+    
 
     const [value, setValue] = useState('0');
     const [error, setError] = useState();

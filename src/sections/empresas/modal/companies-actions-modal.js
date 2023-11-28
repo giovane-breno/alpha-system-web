@@ -138,7 +138,7 @@ export const ViewModal = ({ id, refreshState, setRefreshState }) => {
         try {
             const { status } = await UpdateCompany(id, form);
             if (status === 'success') {
-                enqueueSnackbar('Funcionário atualizado com sucesso!', { variant: 'success', position: 'top-right' });
+                enqueueSnackbar('Empresa atualizada com sucesso!', { variant: 'success', position: 'top-right' });
                 setError("");
 
                 setRefreshState(!refreshState);
