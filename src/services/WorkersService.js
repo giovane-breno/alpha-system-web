@@ -244,7 +244,7 @@ export const CreateWorker = async (form) => {
                 house_number: form.houseNumber, complement: form.complement, references: form.references
             },
             phones: {
-                phone_number: form.phone
+                phones_number: form.phones
             }
 
 
@@ -274,7 +274,7 @@ export const UpdateWorker = async (id, form) => {
                 house_number: form.house_number, complement: form.complement, references: form.references
             },
             phones: {
-                phone_number: form.phone
+                phones_number: form.phones
             }
         });
 

@@ -27,7 +27,7 @@ export const WorkerForm = () => {
         bornAt: '',
         marital: '',
         scholarity: '',
-        phone: '',
+        phones: '',
 
         company: '',
         role: null,
@@ -103,7 +103,7 @@ export const WorkerForm = () => {
                     bornAt: '',
                     marital: '',
                     scholarity: '',
-                    phone: '',
+                    phones: '',
 
                     role: null,
                     division: null,
@@ -257,18 +257,18 @@ export const WorkerForm = () => {
                             <Grid item xs={6}>
                                 <ReactInputMask
                                     mask="(99) 99999-9999"
-                                    value={form.phone}
+                                    value={form.phones}
                                     onChange={e => {
                                         setForm({
                                             ...form,
-                                            phone: e.target.value,
+                                            phones: e.target.value,
                                         });
                                     }}
                                 >
                                     {() => <TextField
                                         fullWidth
                                         label={"Telefone / Celular"}
-                                        variant="outlined" required error={!!(error?.phones?.phone_number)} helperText={error?.phones?.phone_number} />}
+                                        variant="outlined" required error={!!(error?.phones?.phones_number)} helperText={error?.phones?.phones_number} />}
                                 </ReactInputMask>
                             </Grid>
                         </Grid>

@@ -155,7 +155,7 @@ export const ViewModal = ({ id, refreshState, setRefreshState }) => {
                     incidents: data.incidents,
                     gratifications: data.gratifications,
 
-                    phone: data.phone.phone_number,
+                    phones: data.phone.phone_number,
 
                     cep: data.address.CEP,
                     street: data.address.street,
@@ -175,7 +175,7 @@ export const ViewModal = ({ id, refreshState, setRefreshState }) => {
             }
 
         } catch (error) {
-
+            console.log(error);
         }
 
     }
@@ -312,18 +312,18 @@ export const ViewModal = ({ id, refreshState, setRefreshState }) => {
                                 <Grid item xs={4}>
                                     <ReactInputMask
                                         mask="(99) 99999-9999"
-                                        value={form.phone}
+                                        value={form.phones}
                                         onChange={e => {
                                             setForm({
                                                 ...form,
-                                                phone: e.target.value,
+                                                phones: e.target.value,
                                             });
                                         }}
                                     >
                                         {() => <TextField
                                             fullWidth
                                             label={"Telefone / Celular"}
-                                            variant="outlined" required error={!!(error?.phones?.phone_number)} helperText={error.phones?.phone_number} />}
+                                            variant="outlined" required error={!!(error?.phone?.phone_number)} helperText={error?.phone?.phone_number} />}
                                     </ReactInputMask>
                                 </Grid>
                                 <Grid item xs={4}>

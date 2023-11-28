@@ -35,7 +35,7 @@ export const AccountProfileDetails = () => {
     firstName: 'Anika',
     lastName: 'Visser',
     email: 'demo@devias.io',
-    phone: '',
+    phones: '',
     state: 'los-angeles',
     country: 'USA'
   });
@@ -120,11 +120,11 @@ export const AccountProfileDetails = () => {
               >
                 <TextField
                   fullWidth
-                  label="Phone Number"
-                  name="phone"
+                  label="phones Number"
+                  name="phones"
                   onChange={handleChange}
                   type="number"
-                  value={values.phone}
+                  value={values.phones}
                 />
               </Grid>
               <Grid

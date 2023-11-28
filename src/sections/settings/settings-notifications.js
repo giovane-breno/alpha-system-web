@@ -59,7 +59,7 @@ export const SettingsNotifications = () => {
                   />
                   <FormControlLabel
                     control={<Checkbox defaultChecked />}
-                    label="Phone calls"
+                    label="phones calls"
                   />
                 </Stack>
               </Stack>
@@ -85,7 +85,7 @@ export const SettingsNotifications = () => {
                   />
                   <FormControlLabel
                     control={<Checkbox defaultChecked />}
-                    label="Phone calls"
+                    label="phones calls"
                   />
                 </Stack>
               </Stack>

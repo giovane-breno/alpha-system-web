@@ -63,7 +63,7 @@ const Page = () => {
                 <OverviewTotalProfit
                   sx={{ height: '100%' }}
                   value={userCount}
-                  title="Funcionários Cadastrados"
+                  title="Funcionários Cadastrados no Sistema "
                   icon={<UserIcon />}
                 />
               </Grid>
