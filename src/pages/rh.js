@@ -33,24 +33,28 @@ import { AccountBalance, BeachAccess, CardGiftcard, Home, Info, LibraryAdd, Mana
 // férias
 const data = [
   {
+    id: 1,
     url: 'rh/funcoes-administrativas',
     title: 'Funções Administrativas',
     description: 'Cadastro e Consulta de Funções',
     icon: <ManageAccounts color='success' sx={{ height: 100, width: 80 }} />,
   },
   {
+    id: 2,
     url: 'rh/funcoes',
     title: 'Funções',
     description: 'Cadastro e Consulta de Funções',
     icon: <Person color='success' sx={{ height: 100, width: 80 }} />,
   },
   {
+    id: 3,
     url: 'rh/divisoes',
     title: 'Divisões',
     description: 'Cadastro e Consulta de Divisões',
     icon: <People color='success' sx={{ height: 100, width: 80 }} />,
   },
   {
+    id: 4,
     url: 'rh/tipo-beneficios',
     title: 'Tipos de Benefícios',
     description: 'Cadastro e Consulta de Benefícios',
@@ -58,6 +62,7 @@ const data = [
   },
   // MUDA AQUI
   {
+    id: 5,
     url: 'rh/atribuir',
     title: 'Atribuir',
     permission: '',
@@ -67,6 +72,7 @@ const data = [
 
 
   {
+    id: 6,
     url: 'rh/ferias',
     title: 'Férias',
     description: 'Consulta de Férias',
@@ -74,6 +80,7 @@ const data = [
     icon: <BeachAccess color='info' sx={{ height: 100, width: 80 }} />,
   },
   {
+    id: 7,
     url: 'rh/gratificacoes',
     title: 'Gratificações',
     description: 'Consulta de Gratificações',
@@ -81,6 +88,7 @@ const data = [
     icon: <CardGiftcard color='info' sx={{ height: 100, width: 80 }} />,
   },
   {
+    id: 8,
     url: 'rh/incidentes',
     title: 'Incidentes',
     description: 'Consulta de Incidentes',
@@ -88,6 +96,7 @@ const data = [
     icon: <Report color='info' sx={{ height: 100, width: 80 }} />,
   },
   {
+    id: 9,
     url: 'rh/beneficios',
     title: 'Benefícios',
     description: 'Consulta de Benefícios',
@@ -181,7 +190,7 @@ const Page = () => (
           <Grid container spacing={2}>
             {data.slice(0, 4).map((rh) => {
               return (
-                <Grid item xs={3}>
+                <Grid item xs={3} key={rh.id}>
                   <RhCard title={rh.title}
                     description={rh.description}
                     url={rh.url}
