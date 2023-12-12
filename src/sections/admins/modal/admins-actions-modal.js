@@ -72,8 +72,6 @@ export const MenuButton = () => {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem><PromoteModal /></MenuItem>
-                <MenuItem><DemoteModal /></MenuItem>
             </Menu>
 
             <Modal
