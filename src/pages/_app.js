@@ -39,9 +39,9 @@ const App = (props) => {
           <CssBaseline />
           <AuthConsumer>
             {
-              (auth) => auth.isLoading
-                ? <SplashScreen />
-                : getLayout(<Component {...pageProps} />)
+              (auth) => Component.public || !auth.isLoading
+                ? getLayout(<Component {...pageProps} />)
+                : <SplashScreen />
             }
           </AuthConsumer>
         </ThemeProvider>
