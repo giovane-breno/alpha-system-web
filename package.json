@@ -4,6 +4,9 @@
   "author": "Alpha-System",
   "licence": "MIT",
   "private": false,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next",
     "build": "next build",
